@@ -1,0 +1,16 @@
+import simpy
+
+# NOT DONE YET
+
+SIM_DURATION = 100
+
+def world(env, scheduler):
+    "A process that randomly spawns applications"
+
+    while True:
+
+
+env = simpy.Environment()
+
+
+env.run(until=SIM_DURATION)

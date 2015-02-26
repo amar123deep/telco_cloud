@@ -1,0 +1,12 @@
+import simpy
+
+# Class wich manages all applications and users
+class World(object):
+
+    def __init__(self, env, scheduler, nbr_applications, user_population_model):
+    	self.env = env
+    	self.scheduler = scheduler
+
+    	# Instanciate users and aplications
+
+    def revaluate(self):
