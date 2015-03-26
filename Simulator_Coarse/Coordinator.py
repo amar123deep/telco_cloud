@@ -42,6 +42,7 @@ class Coordinator(object):
 						pathName = [] 
 						for varPath in path: 
 							pathName.append(varPath.getName())
+						logging.debug('%s- Node: %s, User: %d'%(type(self).__name__, leafNodeName,nbrUsrs))
 						logging.debug('%s - Returning path for %s from %s and %s with %i users: %s' % (type(self).__name__, appName, leafNodeName, dcName, nbrUsrs, str(pathName)))
 						yield (path, appName, leafNodeName, nbrUsrs)
 		

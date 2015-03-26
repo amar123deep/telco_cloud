@@ -1,6 +1,5 @@
 import simpy
 import logging 
-LOG_FILENAME = 'logging_example.out'
 
 class SystemMonitor(object):
 	
@@ -16,13 +15,33 @@ class SystemMonitor(object):
 
 		self.bigBadness = {}
 		
+		self.bigUtilization = {}
 		
 	def measure(self):
 		while True:
 			systemBadness,dcBadness,linkBadness, dcApp= self.measureSystemBadness()
 			self.bigBadness[self.env.now] = (systemBadness, dcBadness, linkBadness,dcApp)
+			l1,l2 = self.measureSystemUtilization()
+			self.bigUtilization[self.env.now] = (l1,l2)
 			yield self.env.timeout(self.time_delta)
+	
+	def measureSystemUtilization(self): 
+		dcUtilization = []
+		linkUtilization = []
+		def measureDCUtilization(): 
+			dcList = self.topology.getAllDCs()
+			for dc in sorted(dcList): 
+				dcUtilization.append(dc.computeAppUtilization())
+			return dcUtilization
 		
+		def measureLinkUtilization(): 
+			linkList = self.topology.getAllLinks()
+			for link in sorted(linkList): 
+				linkUtilization.append(link.computeAppUtilization())
+			return linkUtilization
+		
+		return measureDCUtilization(),measureLinkUtilization()
+	
 	def measureSystemBadness(self):
 		dcBadness = []
 		linkBadness = []
@@ -49,8 +68,13 @@ class SystemMonitor(object):
 		systemBadness = measureDCBadness()+ measureLinkBadness()
 		# write to the files
 		return systemBadness,dcBadness,linkBadness,listAllapp()
-		#return str(systemBadness),'\t',str(dcBadness),'\t',str(linkBadness),'\n'
 
+	def composeUtilization(self):
+		fileD = open('sysLog2.txt','w')
+		for key,(l1,l2) in self.bigUtilization.iteritems():
+			fileD.write(str(key) + ':'+str(l1)+':'+str(l2)+'\r')
+		fileD.close()
+		
 	def compose(self):
 		fileDescr = open('sysLog1.txt','w')
 		for key, (v1,v2,v3,v4) in self.bigBadness.iteritems(): 

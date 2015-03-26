@@ -130,7 +130,7 @@ class Scheduler(object):
 	'''
 	######## Measurements ########
 	'''
-	# Sums badness in each resource entity
+	# [DEPRICATED] Sums badness in each resource entity
 	def measureTotalBadness(self):
 		badness = 0
 		
@@ -141,11 +141,11 @@ class Scheduler(object):
 			
 		return badness
 	
-	# Produce header for 
+	# [DEPRICATED] Produce header for 
 	def produceTotalBadnessHeader(self):
 		return 'Total badness'
 	
-	# Sums badness in each resource entity
+	# [DEPRICATED] Sums badness in each resource entity
 	def measureBadness(self):
 		badness = ''
 		
@@ -156,7 +156,7 @@ class Scheduler(object):
 			
 		return badness
 	
-	# Produce header for 
+	# [DEPRICATED] Produce header for 
 	def produceBadnessHeader(self):
 		header = ''
 		
@@ -208,9 +208,10 @@ class Scheduler(object):
 		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
 		
 		badness = 0
-		
+
 		for entity in entities.itervalues():
 			badness += entity['ENTITY'].evaluateAggregateBadness(entity['USAGE'])
+			
 		return badness
 	
 	def findNeighbourLocal(self,node): 

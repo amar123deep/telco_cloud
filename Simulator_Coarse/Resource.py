@@ -105,7 +105,17 @@ class Resource(object):
 				totalSubsucribers += nbrAppSubscribers
 
 			resource['USAGE'] = totalSubsucribers
-
+		
+	# compute total utilization
+	def computeAppUtilization(self):
+		# we want usage of all the applications running in that particular resource
+		bigDict = {}
+		for resourceName,resource in self.resources.iteritems():
+			bigDict[resourceName] = {}
+			for appName, demand in resource['APPS'].iteritems():
+				bigDict[resourceName][appName] = demand
+		return bigDict
+	
 	# Compute the current badness
 	def computeTotalBadness(self): 
 		result = 0.0

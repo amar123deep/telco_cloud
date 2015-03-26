@@ -98,6 +98,8 @@ def main():
 	monitor.compose()
 	logging.info("Composing results")
 	
+	monitor.composeUtilization()
+	
 	print "DONE"
 	
 if __name__ == '__main__':
