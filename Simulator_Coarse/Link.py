@@ -1,26 +1,39 @@
 import simpy
 
+from Resource import Resource
+from Datacentre import Datacentre
+from Leaf import Leaf
+
 class Link(Resource):
+	RESOURCE_TYPES = {
+		"100Mbit": {	
+						'UPLINK_BW':	{'CAPACITY':100.0, "THRESHOLD":0.5}, 
+						'DOWNLINK_BW':	{'CAPACITY':100.0, "THRESHOLD":0.5}
+					},
+		"1Gbit": {		
+						'UPLINK_BW':	{'CAPACITY':1000.0, "THRESHOLD":0.5}, 
+						'DOWNLINK_BW':	{'CAPACITY':1000.0, "THRESHOLD":0.5}
+					},
+			}
 
-    def __init__(self, env, scheduler):
-        Resource.__init__(self, name, id)
-        self.env = env
-        self.scheduler = scheduler
-        self.applications = []
+	def __init__(self, name, env, resources, length, applications):
+		Resource.__init__(self, name, env, resources, applications)
 
-        self.uplink = uplink
-        self.downlink = downlink
+		self.propagation_latency = length/200000000
+		self.properties = {}
+		self.properties.update({'UPLINK':{'LATENCY':0},'DOWNLINK':{'LATENCY':0}})
 
-    # Add appliction to its list of applications
-    def add_Application(self, application):
-        applications.append({application.id : {'compute_need'}})
+	# Latency calculation
+	def computeLatency(self): # [TO-DO] Implement actual latency function
+		for resourceName in self.properties:
+			self.properties[resourceName]['LATENCY'] = self.propagation_latency + self.resources[resourceName+'_BW']['USAGE']/self.resources[resourceName+'_BW']['CAPACITY']
 
-    # Remove appliction to its list of applications
-    def remove_Application(self, application):
-        applications.remove(application)
-
-    # Update number of users for an application
-    def update_nbr_users(self, application, nbr_users):
-
-    # Evaluate how much resources an application consumes and how much it contributes to the load of the DC
-    def evaluate_resource_usage(self, application, nbr_users):
+	# Get link latency
+	def getLatency(self, direction):
+		return self.latency[direction]
+	
+	# (Resource) Compute resource usage
+	def computeResourceUsage(self):
+		Resource.computeResourceUsage(self)
+		self.computeLatency()
+		self.computeTotalBadness()
