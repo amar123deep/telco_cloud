@@ -51,4 +51,4 @@ class Datacentre(Resource):
 	# contributes to the load of the DC
 	def computeResourceUsage(self):
 		Resource.computeResourceUsage(self)
-		return self.computeTotalBadness()
+		return self.computeTotalOverload()

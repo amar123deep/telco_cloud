@@ -21,7 +21,7 @@ class rrScheduler(Scheduler):
 		
 		for appName, (nodeUsr,DClist) in temp.iteritems():
 			currentNodeList = nodeUsr.keys()
-			badnessList = []
+			overloadList = []
 			dcPathList = {}
 			for dc in DClist:
 				dcName = dc.getName()
@@ -31,13 +31,13 @@ class rrScheduler(Scheduler):
 					paths.append( ( self.topology.getPath( appName, leafNodeName, dcName ), appName, nbrUsers ) ) # [findPathsDC]
 					_temp[ (appName, leafNodeName, dcName) ] = self.topology.getPath(appName, leafNodeName, dcName)
 				dcPathList[dcName] = _temp
-				#badness for placing the application on the DC
-				badnessList.append(self.evaluateAppPlacementOverload(paths))
+				#overload for placing the application on the DC
+				overloadList.append(self.evaluateAppPlacementOverload(paths))
 			
-			minBadness = min(badnessList)
+			minoverload = min(overloadList)
 
-			if minBadness < float('inf'):
-				ind = badnessList.index(minBadness)
+			if minoverload < float('inf'):
+				ind = overloadList.index(minoverload)
 							
 				dcName = DClist[ind].getName()
 				
@@ -45,14 +45,14 @@ class rrScheduler(Scheduler):
 				self.topology.updateTable(dcPathList[ dcName ]) #[Add all the paths for an application ]
 				
 				t_end = time.time()
-				logging.debug('%s - scheduled %s in %s with badness %f, t_start %i t_end %i' % (type(self).__name__, appName, dcName, minBadness, t_start, t_end))
-				self.addMeasurement("SUCCESSFUL,%s,%s,%f,%i"%(appName, dcName, minBadness, (t_end-t_start)))
+				logging.debug('%s - scheduled %s in %s with overload %f, %s' % (type(self).__name__, appName, dcName, minoverload, overloadList))
+				self.addMeasurement("SUCCESSFUL,%s,%s,%f,%i"%(appName, dcName, minoverload, (t_end-t_start)))
 				
 				yield (appName, {dcName:currentNodeList})
 			else: 
-				logging.error('%s - failed to schedule %s, DC badness %s '%(type(self).__name__, appName, str(badnessList)))
+				logging.error('%s - failed to schedule %s, DC overload %s '%(type(self).__name__, appName, str(overloadList)))
 				t_end = time.time()
-				self.addMeasurement("FAILED,%s,%s,%f,%i"%(appName, "-", minBadness, (t_end-t_start)))
+				self.addMeasurement("FAILED,%s,%s,%f,%i"%(appName, "-", minoverload, (t_end-t_start)))
 				yield (appName, {})
 				
 		

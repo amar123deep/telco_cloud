@@ -34,4 +34,4 @@ class Link(Resource):
 	def computeResourceUsage(self):
 		Resource.computeResourceUsage(self)
 		self.computeLatency()
-		self.computeTotalBadness()
+		self.computeTotalOverload()

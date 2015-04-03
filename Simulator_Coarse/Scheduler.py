@@ -47,7 +47,7 @@ class Scheduler(object):
 		Input : app and the leaf node where the app should run   
 		Output: return 1 on success
 		"""
-		badness = self.getBadnessNodes(appNodeDict)
+		overload = self.getoverloadNodes(appNodeDict)
 		
 	def lookupDistH (self,nodeList,dist): 
 		"""
@@ -135,9 +135,9 @@ class Scheduler(object):
 			dictAppNeighbour[app] = node.getChildNodes().append(node.getParentNode())
 		return dictAppNeighbour
 	
-	def evaluateTotalBadness(self, appName, leafNodes, dc):
+	def evaluateTotaloverload(self, appName, leafNodes, dc):
 		"""
-		Descr : Evaluates total badness from 
+		Descr : Evaluates total overload from 
 		Input : app and the leaf node where the app should run   
 		Output: return 1 on success
 		"""
@@ -146,34 +146,34 @@ class Scheduler(object):
 	'''
 	######## Measurements ########
 	'''
-	# [DEPRICATED] Sums badness in each resource entity
-	def measureTotalBadness(self):
-		badness = 0
+	# [DEPRICATED] Sums overload in each resource entity
+	def measureTotaloverload(self):
+		overload = 0
 		
 		enteties = self.topology.getAllDCs() + self.topology.getAllLinks()
 		
 		for entity in enteties:
-			badness += entity.getBadness()
+			overload += entity.getOverload()
 			
-		return badness
+		return overload
 	
 	# [DEPRICATED] Produce header for 
-	def produceTotalBadnessHeader(self):
-		return 'Total badness'
+	def produceTotaloverloadHeader(self):
+		return 'Total overload'
 	
-	# [DEPRICATED] Sums badness in each resource entity
-	def measureBadness(self):
-		badness = ''
+	# [DEPRICATED] Sums overload in each resource entity
+	def measureoverload(self):
+		overload = ''
 		
 		enteties = self.topology.getAllDCs() + self.topology.getAllLinks()
 		
 		for entity in enteties:
-			badness += "%f ," % entity.getBadness()
+			overload += "%f ," % entity.getOverload()
 			
-		return badness
+		return overload
 	
 	# [DEPRICATED] Produce header for 
-	def produceBadnessHeader(self):
+	def produceoverloadHeader(self):
 		header = ''
 		
 		enteties = self.topology.getAllDCs() + self.topology.getAllLinks()
@@ -218,17 +218,6 @@ class Scheduler(object):
 		
 		for entity in entities:
 			entity['FITS'] = entity['ENTITY'].willAppFit({appName: entity['USAGE']})
-	
-	# [DEPRICATED] Evalute if path can accomodate the placement option
-	def evaluateAppPlacementBadness(self, appPlacement):
-		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
-		
-		badness = 0
-
-		for entity in entities.itervalues():
-			badness += entity['ENTITY'].evaluateAggregateBadness(entity['USAGE'])
-			
-		return badness
 		
 	# Evalute if path can accomodate the placement option
 	def evaluateAppPlacementOverload(self, appPlacement):
@@ -244,30 +233,30 @@ class Scheduler(object):
 	def findNeighbourLocal(self,node): 
 		return node.getChildNodes().append(node.getParentNode())
 		
-	def getBadnessNodes(self,dictAppNode):
+	def getoverloadNodes(self,dictAppNode):
 		"""
-		Descr : compute the badness of the nodes where the application is 
+		Descr : compute the overload of the nodes where the application is 
 				running 
 		Input:  A dictionary with key as application and value as node on which
 				the application is running
-		Output: Dictionary, key: app, value: badness for the corresponding nodes
+		Output: Dictionary, key: app, value: overload for the corresponding nodes
 				where the app is running 
 		"""
-		badnessNodes = {}
+		overloadNodes = {}
 		for app,node in dictAppNode:
-			badnessNodes[node.getName()]=node.getBadness()
-		return badnessNodes
+			overloadNodes[node.getName()]=node.getOverload()
+		return overloadNodes
 	
-	def badnessListNodes(self,lstNode):
+	def overloadListNodes(self,lstNode):
 		"""
-		Descr : computes badness for a list of nodes  
-		Input : List of Nodes whose badness we need to compute 
-		Output: List containing badness for corresponding nodes
+		Descr : computes overload for a list of nodes  
+		Input : List of Nodes whose overload we need to compute 
+		Output: List containing overload for corresponding nodes
 		"""
-		lstbadnessNodes = []
+		lstoverloadNodes = []
 		for node in lstNode:
-			lstbadnessNodes.append(node.getBadness())
-		return lstbadnessNodes
+			lstoverloadNodes.append(node.getOverload())
+		return lstoverloadNodes
 	
 	def evaluateNeighbour(self,appToBeEvaluated):
 		"""
@@ -280,11 +269,11 @@ class Scheduler(object):
 		res = {}
 		for app,node in appToBeEvaluated:
 			listNodes = node.findNeighbourLocal(node)
-			badnessLocalNodes = {}
+			overloadLocalNodes = {}
 			for n in listNodes: 
 				n.resource = n.resource + app.resource
-				badnessLocalNodes[n] = n.getBadness()
-			minNode = min(badnessLocalNodes,key = badnessLocalNodes.get) 
+				overloadLocalNodes[n] = n.getOverload()
+			minNode = min(overloadLocalNodes,key = overloadLocalNodes.get) 
 			# Node dictionary for placement 
 			res[app] = minNode
 		return res 
@@ -297,12 +286,12 @@ class Scheduler(object):
 		Input  : dictAppNode: dictionary of (app,Node) to be placed, thldApp
 		Output : node where the cost of running the app is minimum 
 		"""
-		# compute the badness of the node where the apps are running 
-		dictAppNodeBadness = {}
+		# compute the overload of the node where the apps are running 
+		dictAppNodeOverload = {}
 		appToBeEvaluated = {}
 		for app,node in dictAppNode:
-			dictAppNodeBadness[app] = node.getBadness()
-			if dictAppNodeBadness[app] > thldApp[app]:
+			dictAppNodeOverload[app] = node.getOverload()
+			if dictAppNodeoverload[app] > thldApp[app]:
 				appToBeEvaluated[app] = node
 			else: 
 				# add the app to the node as constraint is fulfilled 

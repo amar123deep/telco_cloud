@@ -29,18 +29,15 @@ class SystemMonitor(object):
 
 	def measure(self):
 		while True:
-			systemBadness,dcBadness,linkBadness, dcApp = self.measureSystemBadness()
-			self.bigBadness[self.env.now] = (systemBadness, dcBadness, linkBadness,dcApp)
-			l1,l2 = self.measureSystemUtilization()
-			self.bigUtilization[self.env.now] = (l1,l2)
+			#systemBadness,dcBadness,linkBadness, dcApp = self.measureSystemBadness()
+			#self.bigBadness[self.env.now] = (systemBadness, dcBadness, linkBadness,dcApp)
+			#l1,l2 = self.measureSystemUtilization()
+			#self.bigUtilization[self.env.now] = (l1,l2)
 			
 			yield self.env.timeout(self.time_delta)
 
 			for (signalName, measPoint) in self.inputs:
 				self.signals[signalName].append((self.env.now, measPoint(self)))
-
-	def addMeasurement(self, signalName, data):
-		self.signals[signalName].append((self.env.now, data))
 
 	def getPlacementBuffer(self):
 		return self.scheduler.getPlacementBuffer()
@@ -83,11 +80,12 @@ class SystemMonitor(object):
 	def measureSystemOverloaFactor(self):
 		result = 0
 		
-		for entity in (self.topology.getAllLinks() + self.topology.getAllDCs()): 
+		for entity in (self.topology.getAllLinks() + self.topology.getAllDCs()):
 			result += entity.getOverloadFactor()
 	
 		return result
 	
+	# [DEPRICATED]
 	def measureSystemBadness(self):
 		dcBadness = []
 		linkBadness = []

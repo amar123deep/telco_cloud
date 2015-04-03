@@ -10,14 +10,14 @@ class Resource(object):
 
 		# Append internal resource properties
 		for resource in self.resources.itervalues():
-			resource.update({'USAGE':0.0, 'BADNESS':0.0, 'APPS':{}})
+			resource.update({'USAGE':0.0, 'OVERLOAD':0.0, 'APPS':{}})
 
 		self.peers = {}
 
 		self.subscribers = {}
 		self.nbrSubscribers = 0
 
-		self.badness = 0.0
+		self.overload = 0.0
 
 	'''
 	Attribute getters
@@ -26,15 +26,11 @@ class Resource(object):
 	def getPeers(self):
 		return self.peers
 	
-	# Get peers as toubles, returns a dictionary
+	# Get overload factor 
 	def getOverloadFactor(self):
-		overloadFactor = 1
-		
-		for resource in self.resources.itervalues():
-			overloadFactor*= 1/(1-resource['USAGE'])
-			
-		return overloadFactor
+		return self.overload
 	
+	# Get peers as toubles, returns a dictionary
 	def getPeersTouple(self):
 		result = []
 		for peerName, peer in self.peers.iteritems():
@@ -44,6 +40,7 @@ class Resource(object):
 					result.append((peer, itsPeer))
 					
 		return result
+		
 	# Add peer
 	def addPeer(self, peer):
 		self.peers[peer.getName()] = peer
@@ -51,10 +48,6 @@ class Resource(object):
 	# Get name of the node
 	def getName(self):
 		return self.name
-		
-	# Get badness
-	def getBadness(self):
-		return self.badness
 	
 	# Get subscribers
 	def getSubscribers(self):
@@ -82,6 +75,8 @@ class Resource(object):
 		self.computeTotalSubscribers()
 
 		self.computeResourceUsage()
+		
+		self.computeTotalOverload()
 		
 	# Compute total number of subscribers
 	def computeTotalSubscribers(self):
@@ -125,88 +120,27 @@ class Resource(object):
 			result[resourceName] = resource['USAGE']/resource['CAPACITY']
 		return result
 
-	# [DEPRECATED] Compute the current badness
-	def computeTotalBadness(self): 
+	# Compute the current overload factor
+	def computeTotalOverload(self): 
 		result = 0.0
 		
 		for resource in self.resources.itervalues():
-			badness = self.computeBadness(
+			overload = self.computeOverload(
 				resource['USAGE']
-				/resource['CAPACITY'],
-				resource['THRESHOLD'])
+				/resource['CAPACITY'])
 
-			resource['BADNESS'] = badness
-			result += badness
+			resource['OVERLOAD'] = overload
+			result += overload
 
-		self.badness = result
+		self.overload = result
 
-	# [DEPRECATED] Compute badness for a resource
-	def computeBadness(self, normAvailRes, thldRes):
+	# Compute overload for a resource
+	def computeOverload(self, normAvailRes):
 		if normAvailRes >= 1:
 			return float('inf')
-		elif normAvailRes <= thldRes:
-			return 0.0
 		else:
-			return abs(thldRes-normAvailRes)*1/(1-normAvailRes)
-
-	'''
-	Finding paths for workload propagation and scheduling
-	'''
-	# [Deprecated] Find paths to from this resource to application
-	def findPaths(self, appName): # Caution! Only for trees
-		# [Preliminary] Recursive search function
-		def traverse(node, path, appName, paths):
-			if node.hosts(appName): # If node hosts application
-				#print "%s found in %s along path %s" % (appName, node.getName(), str(path))
-				paths.append(path)
-			else: # Keep looking ...
-				peers = node.getPeers()
-				for peerName in peers:
-					if peers[peerName] not in path: 
-						traverse(peers[peerName], path + [peers[peerName]], appName, paths)
-
-		paths = [] # All the resulting paths
-		path = [] # Iteratively constructed path
-
-		traverse(self, path+[self], appName, paths)
-		
-		return paths
-		
-	# [Deprecated] Find paths to from this resource to application
-	def findMinPath(self, appName): # Caution! Only for trees
-		paths = self.findPaths(appName)
-		
-		assert len(paths)>0, 'App %s not found from %s' % (appName, leafName)
-
-		minLen = sys.maxint
-		minPath = None
-
-		for path in paths:
-			if len(path)<=minLen:
-				minLen = len(path)
-				minPath = path
-		
-		return minPath
-
-	# [Deprecated] Find paths to from this resource to application
-	def findPathsDC(self, fromNode, toNode): # Caution! Only for trees
-
-		def traverse(node, path, toNodeName, paths):
-			if node.getName is toNodeName:
-				paths.append(path)
-			else: # Keep looking ...
-				peers = node.getPeers()
-				for peerName in peers:
-					if peers[peerName] not in path: 
-						traverse(peers[peerName], path + [peers[peerName]], dcName, paths)
-
-		paths = [] # All the resulting paths
-		path = [] # Iteratively constructed path
-
-		traverse(self, path+[self], toNode.getName(), paths)
-		
-		return paths
-
+			return 1/(1-normAvailRes)
+			
 	'''
 	Evaluation of resource usage when scheduling
 	'''
@@ -253,64 +187,12 @@ class Resource(object):
 
 		return usage
 
-	# Evalutae hypothecital badness this consistillation
-	def evaluateBadness(self, targetApps):
-		# Input:    apps is a dictionary with application name and population
-		# Output:   The badness for each resource, when taking into accound the 
-		#           additional workload incurred by app and nbrUsers.
-		badness = {}
-
-		totalUsage = self.evaluateResourcesUsage(targetApps)
-
-		exclude = targetApps.keys()
-		
-		# For all other apps
-		for resourceName, resource in self.resources.iteritems():
-			badness[resourceName] = self.computeBadness(totalUsage[resourceName]/resource['CAPACITY'], resource['THRESHOLD'])
-
-		return badness
-
-	# Evalutae hypothecital badness usage given the addition of targetApps
-	def evaluateBadnessAdditive(self, targetApps):
-		# Input:    apps is a dictionary with application name and population
-		# Output:   The badness for each resource, when taking into accound the 
-		#           additional workload incurred by app and nbrUsers.
-		badness = {}
-
-		totalUsage = self.evaluateResourcesUsage(targetApps)
-
-		exclude = targetApps.keys()
-		
-		# For all other apps
-		for resourceName, resource in self.resources.iteritems():
-			badness[resourceName] = self.computeBadness(totalUsage[resourceName]/resource['CAPACITY'], resource['THRESHOLD'])
-
-		return badness
-		
-	# Evalutae hypothecital badness usage given the addition of targetApps
-	def evaluateResourceBadness(self, targetResources):
-		badness = {}
-
-		for resourceName, resourceUsage in targetResources.iteritems():
-			badness[resourceName] = self.computeBadness(resourceUsage/self.resources[resourceName]['CAPACITY'], self.resources[resourceName]['THRESHOLD'])
-
-		return badness
-		
-	# [DEPRECATED] Evalutae hypothecital badness usage given the addition of targetApps
-	def evaluateAggregateBadness(self, targetResources):
-		badness = 0.0
-
-		for resourceName, resourceUsage in targetResources.iteritems():
-			badness += self.computeBadness(resourceUsage/self.resources[resourceName]['CAPACITY'], self.resources[resourceName]['THRESHOLD'])
-
-		return badness
-		
 	# Evalutae hypothecital badness usage given the addition of targetApps
 	def evaluateAggregateOverload(self, targetResources):
 		overload = 1
 
-		for resourceName, resourceUsage in targetResources.iteritems():
-			overload *= 1/(1+resourceUsage/self.resources[resourceName]['CAPACITY'])
+		for resourceUsage in targetResources.itervalues():
+			overload *= self.computeOverload(resourceUsage)
 			
 		return overload
 	
