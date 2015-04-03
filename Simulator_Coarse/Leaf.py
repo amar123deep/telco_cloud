@@ -13,11 +13,11 @@ class Leaf(Resource):
 	def hosts(self, app):
 		return False
 	
-	# Get the stored to a specific application
+	# [Deprecated] Get the stored to a specific application
 	def getPath(self, appName):
 		return self.paths[appName]
 		
-	# Set path to a specific application
+	# [Deprecated] Set path to a specific application
 	def setPath(self, appName, path):
 		self.paths[appName] = path
 

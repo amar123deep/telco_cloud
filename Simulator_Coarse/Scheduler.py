@@ -12,7 +12,24 @@ class Scheduler(object):
 	def __init__(self, env, topology):
 		self.env = env
 		self.topology = topology
+		self.placements = []
+		
+		#self.monitor.registerSignal( "PLACEMENTS" )
+		#self.monitor.registerOutput( [ ("PLACEMENTS", SystemMonitor.fileCSVOutput, self.composePlacementsHeader) ] )
 	
+	def addMeasurement(self, data):
+		self.placements.append(data)
+		
+	def getPlacementBuffer(self):
+		placementsBuffer = str()
+		
+		for placement in self.placements:
+			placementsBuffer += "%s \r" % placement
+			
+		self.placements = []
+		
+		return placementsBuffer
+		
 	def removeDC(self,AppDCList):
 		'''
 		removes the list of DCs from the table of the topology
@@ -21,6 +38,7 @@ class Scheduler(object):
 			dc = self.topology.getNode(dcName)
 			dc.terminateApp(appName)
 		self.topology.removeFromTable(AppDCList)
+	
 	
 	def addAppLeafNode(self, appNodeDict): 
 		"""
@@ -78,7 +96,6 @@ class Scheduler(object):
 		if node.getName() in newDict:
 			del newDict[node.getName()]
 		print "---result---"
-		print newDict
 		return newDict
 	
 	# Method depricated	
@@ -92,7 +109,6 @@ class Scheduler(object):
 		d = 0
 		while d<= dist: 
 			d = d+1
-			print newDict
 			print "----------"
 			for nodeAttributes in newDict.itervalues(): 
 				#print nodeAttributes
@@ -203,7 +219,7 @@ class Scheduler(object):
 		for entity in entities:
 			entity['FITS'] = entity['ENTITY'].willAppFit({appName: entity['USAGE']})
 	
-	# Evalute if path can accomodate the placement option
+	# [DEPRICATED] Evalute if path can accomodate the placement option
 	def evaluateAppPlacementBadness(self, appPlacement):
 		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
 		
@@ -213,6 +229,17 @@ class Scheduler(object):
 			badness += entity['ENTITY'].evaluateAggregateBadness(entity['USAGE'])
 			
 		return badness
+		
+	# Evalute if path can accomodate the placement option
+	def evaluateAppPlacementOverload(self, appPlacement):
+		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
+		
+		overloadFactor = 0
+
+		for entity in entities.itervalues():
+			overloadFactor += entity['ENTITY'].evaluateAggregateOverload(entity['USAGE'])
+			
+		return overloadFactor	
 	
 	def findNeighbourLocal(self,node): 
 		return node.getChildNodes().append(node.getParentNode())

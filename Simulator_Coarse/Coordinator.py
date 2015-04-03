@@ -42,7 +42,7 @@ class Coordinator(object):
 						pathName = [] 
 						for varPath in path: 
 							pathName.append(varPath.getName())
-						logging.debug('%s- Node: %s, User: %d'%(type(self).__name__, leafNodeName,nbrUsrs))
+						logging.debug('%s - Node: %s, User: %d'%(type(self).__name__, leafNodeName,nbrUsrs))
 						logging.debug('%s - Returning path for %s from %s and %s with %i users: %s' % (type(self).__name__, appName, leafNodeName, dcName, nbrUsrs, str(pathName)))
 						yield (path, appName, leafNodeName, nbrUsrs)
 		
@@ -52,7 +52,7 @@ class Coordinator(object):
 		#logging.debug('%s- To be called for path' % (type(self).__name__, str()))
 		# find all the apps to be removed and send it to the scheduler
 		removeAppDClist = []
-		for appName,dcLeafDict in self.registry.iteritems():
+		for appName, dcLeafDict in self.registry.iteritems():
 			for dcName in dcLeafDict.keys():
 				if appName not in currentAPPlist:
 					# remove from the registry
@@ -62,8 +62,7 @@ class Coordinator(object):
 		for (appName,name) in removeAppDClist: 
 			del self.registry[appName]	
 		
-		
-			
+
 		self.scheduler.removeDC(removeAppDClist)
 		
 		logging.debug('%s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsNotScheduled.keys())))
@@ -74,5 +73,6 @@ class Coordinator(object):
 					# Update app registry 
 					self.registry[appName] = dcLeafDict  
 					(nodeUser, placementOptions) = appsNotScheduled[appName]
+					
 					for leafNodeName, nbrUsrs in nodeUser.iteritems(): 
 						yield (self.topology.getPath(appName, leafNodeName, dcName), appName, leafNodeName, nbrUsrs)

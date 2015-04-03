@@ -1,6 +1,5 @@
 __author__ = 'amardeep'
 
-
 from numpy import *
 
 import numpy as np
@@ -93,6 +92,8 @@ interval = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
 # event = [("Zeta","Uniform"),("Zeta","Zeta"),("Zeta","Uniform"),("Zeta","Zeta")]
 event = ["Zeta","Uniform","Zeta","Uniform","Zeta","Uniform","Zeta","Uniform","Zeta","Uniform","Zeta","Uniform"]
 
+# generate the workload for the testing scenarios
+# Scenarios: Application 1 is popular among all, 
 _workload_dict = {}
 
 for (i,j,k) in zip(interval,event,nbr_users):

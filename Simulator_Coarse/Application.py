@@ -19,24 +19,18 @@ class ExpAppResrFunc(object):
 
 class Application(object):
 	
-	TYPEs = {
-		'S':{	
-				'CPU':LinearAppResrFunc(0.1, 0.2),
-				'STORAGE':LinearAppResrFunc(0.1, 0.2),
-				'UPLINK_BW':LinearAppResrFunc(1.0, 1.0),
-				'DOWNLINK_BW':LinearAppResrFunc(1.0, 1.0)
+	TYPES = {
+		'CPU_INTENSIVE':{	
+				'CPU':LinearAppResrFunc(0.0, 0.28),
+				'NET':LinearAppResrFunc(0.0, 0.01),
 			},
-		'M':{	
-				'CPU':LinearAppResrFunc(1.0, 1.0),
-				'STORAGE':LinearAppResrFunc(1.0, 1.0),
-				'UPLINK_BW':LinearAppResrFunc(1.0, 1.0),
-				'DOWNLINK_BW':LinearAppResrFunc(1.0, 1.0)
+		'NET_INTENSIVE':{	
+				'CPU':LinearAppResrFunc(0.0, 0.09),
+				'NET':LinearAppResrFunc(0.0, 0.39),
 			},
-		'L':{	
+		'NORMAL':{	
 				'CPU':LinearAppResrFunc(1.0, 1.0),
-				'STORAGE':LinearAppResrFunc(1.0, 1.0),
-				'UPLINK_BW':LinearAppResrFunc(1.0, 1.0),
-				'DOWNLINK_BW':LinearAppResrFunc(1.0, 1.0)
+				'NET':LinearAppResrFunc(1.0, 1.0),
 			}
 		}
 	
@@ -55,3 +49,4 @@ class Application(object):
 	# Get name
 	def getName(self):
 		return self.name
+		

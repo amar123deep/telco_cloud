@@ -7,22 +7,16 @@ class Datacentre(Resource):
 	# Data centre sizes
 	RESOURCE_TYPES = {
 		"L":{ 
-				"CPU":			{'CAPACITY':50.0,"THRESHOLD":0.5},
-				"STORAGE":		{'CAPACITY':50.0,"THRESHOLD":0.5},
-				"UPLINK_BW":	{'CAPACITY':50.0,"THRESHOLD":0.5}, 
-				"DOWNLINK_BW":	{'CAPACITY':50.0,"THRESHOLD":0.5}
+				"CPU":			{'CAPACITY':2000.0,"THRESHOLD":0.5},
+				"NET":			{'CAPACITY':2000.0,"THRESHOLD":0.5}
 			},
 		"M":{ 
-				"CPU":			{'CAPACITY':50.0,"THRESHOLD":1.0},
-				"STORAGE":		{'CAPACITY':50.0,"THRESHOLD":1.0},
-				"UPLINK_BW":	{'CAPACITY':50.0,"THRESHOLD":1.0}, 
-				"DOWNLINK_BW":	{'CAPACITY':50.0,"THRESHOLD":1.0}
+				"CPU":			{'CAPACITY':200.0,"THRESHOLD":0.5},
+				"NET":			{'CAPACITY':200.0,"THRESHOLD":0.5}
 			},
 		"S":{ 
-				"CPU":			{'CAPACITY':200.0,"THRESHOLD":0.5},
-				"STORAGE":		{'CAPACITY':200.0,"THRESHOLD":0.5},
-				"UPLINK_BW":	{'CAPACITY':200.0,"THRESHOLD":0.5},
-				"DOWNLINK_BW":	{'CAPACITY':200.0,"THRESHOLD":0.5}
+				"CPU":			{'CAPACITY':20.0,"THRESHOLD":0.5},
+				"NET":			{'CAPACITY':20.0,"THRESHOLD":0.5}
 			}
 		}
 	

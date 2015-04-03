@@ -18,7 +18,7 @@ class Resource(object):
 		self.nbrSubscribers = 0
 
 		self.badness = 0.0
-	
+
 	'''
 	Attribute getters
 	'''
@@ -27,6 +27,14 @@ class Resource(object):
 		return self.peers
 	
 	# Get peers as toubles, returns a dictionary
+	def getOverloadFactor(self):
+		overloadFactor = 1
+		
+		for resource in self.resources.itervalues():
+			overloadFactor*= 1/(1-resource['USAGE'])
+			
+		return overloadFactor
+	
 	def getPeersTouple(self):
 		result = []
 		for peerName, peer in self.peers.iteritems():
@@ -36,7 +44,6 @@ class Resource(object):
 					result.append((peer, itsPeer))
 					
 		return result
-	
 	# Add peer
 	def addPeer(self, peer):
 		self.peers[peer.getName()] = peer
@@ -69,14 +76,8 @@ class Resource(object):
 		if appName not in self.subscribers:
 			self.subscribers[appName] = {}
 			self.subscribers[appName]['LEAFS'] = {}
-		
-		if nbrUsers is 0:
-			del self.subscribers[appName]['LEAFS'][leafName]
-		else:
-			self.subscribers[appName]['LEAFS'][leafName] = nbrUsers
-		
-		if len(self.subscribers[appName]['LEAFS']) is 0:
-			del self.subscribers[appName]
+
+		self.subscribers[appName]['LEAFS'][leafName] = nbrUsers
 
 		self.computeTotalSubscribers()
 
@@ -106,7 +107,7 @@ class Resource(object):
 
 			resource['USAGE'] = totalSubsucribers
 		
-	# compute total utilization
+	# compute app utilization
 	def computeAppUtilization(self):
 		# we want usage of all the applications running in that particular resource
 		bigDict = {}
@@ -115,8 +116,16 @@ class Resource(object):
 			for appName, demand in resource['APPS'].iteritems():
 				bigDict[resourceName][appName] = demand
 		return bigDict
-	
-	# Compute the current badness
+
+	# compute resource utilization
+	def getResourceUtilization(self):
+		# we want usage of all the applications running in that particular resource
+		result = {}
+		for resourceName, resource in self.resources.iteritems():
+			result[resourceName] = resource['USAGE']/resource['CAPACITY']
+		return result
+
+	# [DEPRECATED] Compute the current badness
 	def computeTotalBadness(self): 
 		result = 0.0
 		
@@ -131,7 +140,7 @@ class Resource(object):
 
 		self.badness = result
 
-	# Compute badness for a resource
+	# [DEPRECATED] Compute badness for a resource
 	def computeBadness(self, normAvailRes, thldRes):
 		if normAvailRes >= 1:
 			return float('inf')
@@ -287,7 +296,7 @@ class Resource(object):
 
 		return badness
 		
-	# Evalutae hypothecital badness usage given the addition of targetApps
+	# [DEPRECATED] Evalutae hypothecital badness usage given the addition of targetApps
 	def evaluateAggregateBadness(self, targetResources):
 		badness = 0.0
 
@@ -296,6 +305,15 @@ class Resource(object):
 
 		return badness
 		
+	# Evalutae hypothecital badness usage given the addition of targetApps
+	def evaluateAggregateOverload(self, targetResources):
+		overload = 1
+
+		for resourceName, resourceUsage in targetResources.iteritems():
+			overload *= 1/(1+resourceUsage/self.resources[resourceName]['CAPACITY'])
+			
+		return overload
+	
 	# Evalutae if an application can be accomodated in the infrastucture
 	def willAppFit(self, targetApps):
 		result = {}

@@ -26,6 +26,15 @@ class Topology:
 	# Return all Links 
 	def getAllLinks(self):
 		return self.links.values()
+		
+	# Return all leafs
+	def getAllLeafs(self):
+		result = []
+		
+		for leafName in sorted(self.leafs, key=lambda x: str(x)):
+			result.append(self.leafs[leafName])
+		
+		return result
 	
 	def getPath(self, appName, fromNodeName, toNodeName):
 		assert type(appName) is str, "Topology.getPath : appName is not a string"
