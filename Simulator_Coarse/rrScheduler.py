@@ -51,6 +51,7 @@ class rrScheduler(Scheduler):
 				yield (appName, {dcName:currentNodeList})
 			else: 
 				logging.error('%s - failed to schedule %s, DC overload %s '%(type(self).__name__, appName, str(overloadList)))
+				print '%s - failed to schedule %s, DC overload %s '%(type(self).__name__, appName, str(overloadList))
 				t_end = time.time()
 				self.addMeasurement("FAILED,%s,%s,%f,%i"%(appName, "-", minoverload, (t_end-t_start)))
 				yield (appName, {})

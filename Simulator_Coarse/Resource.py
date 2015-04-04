@@ -191,9 +191,11 @@ class Resource(object):
 	def evaluateAggregateOverload(self, targetResources):
 		overload = 1
 
-		for resourceUsage in targetResources.itervalues():
-			overload *= self.computeOverload(resourceUsage)
-			
+		for resourceName, resourceUsage in targetResources.iteritems():
+			overload *= self.computeOverload(resourceUsage/self.resources[resourceName]['CAPACITY'])
+		
+			#print "%s, %s, %s/%s=%s" % (self.getName(), resourceName, resourceUsage, self.resources[resourceName]['CAPACITY'], overload)
+		
 		return overload
 	
 	# Evalutae if an application can be accomodated in the infrastucture

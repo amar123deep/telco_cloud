@@ -199,17 +199,18 @@ class Scheduler(object):
 		return enteties
 		
 	# Compute total local resource usage for app in appNames and paths 
-	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, nbrUsers)
+	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, demand)
 		enteties = {}
 		
-		for (path, appName, nbrUsers) in appPlacement:
+		for (path, appName, demand) in appPlacement:
 			for entity in path:
 				if entity.getName() not in enteties:
 					enteties[entity.getName()] = {'USAGE':entity.evaluateResourcesUsageExcluding(appName), 'ENTITY':entity}
 				else:
-					usage = entity.evaluateAdditionalResourcesUsage({appName:nbrUsers})
+					usage = entity.evaluateAdditionalResourcesUsage({appName:demand})
 					for resourceName, resourceUsage in usage.iteritems():
 						enteties[entity.getName()]['USAGE'][resourceName] += resourceUsage
+						
 		return enteties
 	
 	# Evalute if path can accomodate the placement option
@@ -227,7 +228,7 @@ class Scheduler(object):
 
 		for entity in entities.itervalues():
 			overloadFactor += entity['ENTITY'].evaluateAggregateOverload(entity['USAGE'])
-			
+		
 		return overloadFactor	
 	
 	def findNeighbourLocal(self,node): 

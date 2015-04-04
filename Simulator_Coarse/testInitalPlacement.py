@@ -105,7 +105,7 @@ def main():
 	
 	coordinator = Coordinator(topology, scheduler)
 	
-	workload = Workload(env,'workloads/workfile_single.json', coordinator)
+	workload = Workload(env,'workloads/workfile1.json', coordinator)
 	monitor = SystemMonitor(env, 1, topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
