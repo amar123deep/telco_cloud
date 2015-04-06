@@ -4,6 +4,7 @@ This file is to check InitialPlacement
 import simpy
 import time
 import logging
+import Filters
 
 from Resource import Resource 
 from Scheduler import Scheduler 
@@ -18,65 +19,80 @@ from Coordinator import Coordinator
 from Topology import Topology
 
 applications = {"A0":Application("A0",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
+							}
+						),
 				"A1":Application("A1",{
-					'CPU':LinearAppResrFunc(0.0, 0.09),
-					'NET':LinearAppResrFunc(0.0, 0.39) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
+							},
+						),
 				"A2":Application("A2",{
-					'CPU':LinearAppResrFunc(0.0, 1.0),
-					'NET':LinearAppResrFunc(0.0, 1.0) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
+							}
+						),
 				"A3":Application("A3",{
-					'CPU':LinearAppResrFunc(0.0, 0.09),
-					'NET':LinearAppResrFunc(0.0, 0.39) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
+							},
+						),
 				"A4":Application("A4",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
+							},
+						),
 				"A5":Application("A5",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
+							}
+						),
 				"A6":Application("A0",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
+							},
+						),
 				"A7":Application("A1",{
-					'CPU':LinearAppResrFunc(0.0, 0.09),
-					'NET':LinearAppResrFunc(0.0, 0.39) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
+							}
+						),
 				"A8":Application("A2",{
-					'CPU':LinearAppResrFunc(0.0, 1.0),
-					'NET':LinearAppResrFunc(0.0, 1.0) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
+							},
+						),
 				"A9":Application("A3",{
-					'CPU':LinearAppResrFunc(0.0, 0.09),
-					'NET':LinearAppResrFunc(0.0, 0.39) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
+							}
+						),
 				"A10":Application("A4",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
+							},
+						),
 				"A11":Application("A5",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
+							}
+						),
 				"A12":Application("A0",{
-					'CPU':LinearAppResrFunc(0.0, 0.28),
-					'NET':LinearAppResrFunc(0.0, 0.01) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
+							},
+						),
 				"A13":Application("A1",{
-					'CPU':LinearAppResrFunc(0.0, 0.09),
-					'NET':LinearAppResrFunc(0.0, 0.39) }
-								),
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
+							},
+						),
 				"A14":Application("A2",{
-					'CPU':LinearAppResrFunc(0.0, 1.0),
-					'NET':LinearAppResrFunc(0.0, 1.0) }
-								)
+					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
+					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
+							},
+						),
 				}
 
 def main():
@@ -105,17 +121,19 @@ def main():
 	
 	coordinator = Coordinator(topology, scheduler)
 	
-	workload = Workload(env,'workloads/workfile1.json', coordinator)
+	workload = Workload(env,'workloads/workfile_single.json', coordinator)
 	monitor = SystemMonitor(env, 1, topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("PLACEMENTS", SystemMonitor.getPlacementBuffer),
-																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation)], 
+																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
+																("APPLICATION_LATENCY", SystemMonitor.measureApplicationLatency)], 
 															[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
 																("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
 																("PLACEMENTS", SystemMonitor.fileCSVOutput, SystemMonitor.composePlacementsHeader),
-																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader)],
-																None)
+																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
+																("MEAN_APPLICATION_LATENCY", SystemMonitor.fileCSVOutput, None)],
+															[	("APPLICATION_LATENCY", "MEAN_APPLICATION_LATENCY", Filters.MeanFilter)])
 	
 	workload.produceWorkload()
 	

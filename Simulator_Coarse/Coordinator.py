@@ -10,6 +10,10 @@ class Coordinator(object):
 		self.scheduler = scheduler
 		self.registry = {}
 	
+	def getAppPlacement(self, appName):
+		assert appName in self.registry, "Application not scheduled"
+		return self.registry[appName].keys()[0]
+	
 	def getPath(self, appWorkload): # { ... {appName: {leaf: nbrUsers}}...}
 		logging.debug('%s - Handling apps: %s, runnings apps: %s ' % (type(self).__name__, str(appWorkload.keys()), str(self.registry.keys())))
 		'''
@@ -61,7 +65,7 @@ class Coordinator(object):
 			logging.debug('%s - apps need to be removed: %s' % (type(self).__name__, str(removeAppDClist)))
 		for (appName,name) in removeAppDClist: 
 			del self.registry[appName]	
-		
+	
 
 		self.scheduler.removeDC(removeAppDClist)
 		

@@ -6,7 +6,7 @@ class Topology:
 	Descr : traversing, finding path between any two nodes 
 	'''
 	
-	def __init__(self, env, datacentres, leafs, links):
+	def __init__(self, env, datacentres, links, leafs):
 		self.env = env
 		self.datacentres = datacentres
 		self.leafs = leafs
@@ -25,7 +25,13 @@ class Topology:
 		
 	# Return all Links 
 	def getAllLinks(self):
-		return self.links.values()
+		result = []
+		
+		for linkName in sorted(self.links, key=lambda x: str(x)):
+			
+			result.append(self.links[linkName])
+		
+		return result
 		
 	# Return all leafs
 	def getAllLeafs(self):
@@ -37,14 +43,14 @@ class Topology:
 		return result
 	
 	def getPath(self, appName, fromNodeName, toNodeName):
-		assert type(appName) is str, "Topology.getPath : appName is not a string"
-		assert type(fromNodeName) is str, "Topology.getPath : fromNodeName is not a string"
-		assert type(toNodeName) is str, "Topology.getPath : toNodeName is not a string"
+		#assert type(appName) is str, "Topology.getPath : appName is not a string"
+		#assert type(fromNodeName) is str, "Topology.getPath : fromNodeName is not a string"
+		#assert type(toNodeName) is str, "Topology.getPath : toNodeName is not a string"
 		
 		key = (appName, fromNodeName, toNodeName)
 		
 		if key not in self.pathRegistry:
-			self.updateTable( {(appName, fromNodeName, toNodeName): self.findMinPath(appName, fromNodeName, toNodeName)} )
+			self.updateTable( {key: self.findMinPath(fromNodeName, toNodeName)} )
 		
 		return self.pathRegistry[key]
 	
@@ -71,7 +77,7 @@ class Topology:
 	[TO-DO] Do not include intermediate DCs
 	'''
 	# [Deprecated] Find paths to from this resource to application
-	def findPaths(self, appName, fromNodeName, toNodeName): # Caution! Only for trees
+	def findPaths(self, fromNodeName, toNodeName): # Caution! Only for trees
 
 		def traverse(node, path):
 			traversed_nodes.append(node)
@@ -104,8 +110,8 @@ class Topology:
 		
 		return result
 
-	def findMinPath(self, appName, fromNodeName, toNodeName):
-		paths = self.findPaths(appName, fromNodeName, toNodeName)
+	def findMinPath(self, fromNodeName, toNodeName):
+		paths = self.findPaths(fromNodeName, toNodeName)
 		
 		min_length = sys.maxint
 		min_path = None

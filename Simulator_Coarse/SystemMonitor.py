@@ -20,10 +20,13 @@ class SystemMonitor(object):
 		self.dateAndTime = time.strftime("%d-%m-%Y_%H:%M:%S")
 		self.separator = ","
 
-		for (signalName, measPoint) in self.inputs:
+		for (signalName, measPointFunc) in self.inputs:
 			self.signals[signalName] = []
+			
+		for (inputSignalName, outputSignalName, filterFunc) in self.filters:
+			self.signals[outputSignalName] = []
 
-		# Depricated
+		# [DEPRICATED]
 		self.bigBadness = {}
 		self.bigUtilization = {}
 
@@ -36,17 +39,24 @@ class SystemMonitor(object):
 			
 			yield self.env.timeout(self.time_delta)
 
-			for (signalName, measPoint) in self.inputs:
-				self.signals[signalName].append((self.env.now, measPoint(self)))
+			for (signalName, measPointFunc) in self.inputs:
+				self.signals[signalName].append((self.env.now, measPointFunc(self)))
+			
+			for (inputSignalName, outputSignalName, filterFunc) in self.filters:
+				self.signals[outputSignalName].append((self.env.now, filterFunc(self.signals[inputSignalName][-1])))
 
+	'''
+	Measurements
+	'''
 	def getPlacementBuffer(self):
 		return self.scheduler.getPlacementBuffer()
 	
-	# [DEPRECATED]
 	def measureComponentResourceUtilisation(self): 
 		componentResourceUtilization = ''
-
-		for entity in (self.topology.getAllDCs() + self.topology.getAllLinks()):
+		
+		entities = self.topology.getAllDCs() + self.topology.getAllLinks()
+		
+		for entity in entities:
 			for resourceName, resourceUtilisation in entity.getResourceUtilization().iteritems():
 				componentResourceUtilization += "%s%s%f%s" % (resourceName, self.separator, resourceUtilisation, self.separator)
 
@@ -85,6 +95,32 @@ class SystemMonitor(object):
 	
 		return result
 	
+	def measureApplicationLatency(self):
+		leafs = self.topology.getAllLeafs()
+		
+		latencies = {}
+		
+		for leafNode in leafs:
+			leafNodeName = leafNode.getName()
+			
+			for appName in leafNode.getAppList():
+				if appName not in latencies:
+					latencies[appName] = []
+				
+				dcName = self.coordinator.getAppPlacement(appName)
+				
+				path = self.topology.getPath(appName, leafNodeName, dcName)
+				
+				latency = 0
+				
+				for entity in path:
+					latency += entity.getLatency('NET')
+					
+				latencies[appName].append(latency)
+		
+		return latencies
+				
+	
 	# [DEPRICATED]
 	def measureSystemBadness(self):
 		dcBadness = []
@@ -95,24 +131,24 @@ class SystemMonitor(object):
 			dcList = self.topology.getAllDCs()
 			for dc in sorted(dcList): 
 				dcApp.append(dc.getAllapps())
-				# print dc.getAllapps()
 			return dcApp
 		def measureDCBadness():
 			dcList = self.topology.getAllDCs()
 			for dc in sorted(dcList): 
-				#print dc.getName()
 				dcBadness.append(dc.getBadness())
 			return sum(dcBadness) 
 		def measureLinkBadness():
 			linkList = self.topology.getAllLinks()
 			for link in sorted(linkList):
-				#print link.getName()
 				linkBadness.append(link.getBadness())
 			return sum(linkBadness)
 		systemBadness = measureDCBadness()+ measureLinkBadness()
 		# write to the files
 		return systemBadness,dcBadness,linkBadness,listAllapp()
 
+	'''
+	Headers
+	'''
 	def composeDCLinkHeader(self):
 		dcLinkHeader = "TIME%s" % self.separator
 		
@@ -125,20 +161,18 @@ class SystemMonitor(object):
 	def composePlacementsHeader(self):
 		return "TIME, App, DC, Cost, Exe time\r"
 
-	def computeApplicationLatency(self):
-		leafs = self.topology.getAllLeafs()
-		
-		for leafName, leafNode in leafs.iteritems():
-			subscribers = leafNode.getSubscribers
-			
-			self.topology.getPath( appName, leafNodeName, dcName )
-
+	'''
+	DEPRECATED
+	'''
 	def composeUtilization(self):
 		fileD = open('sysLog2.txt','w')
 		for key,(l1,l2) in self.bigUtilization.iteritems():
 			fileD.write(str(key) + ':'+str(l1)+':'+str(l2)+'\r')
 		fileD.close()
-		
+	
+	'''
+	Output
+	'''
 	def compose(self):
 		fileDescr = open('sysLog1.txt','w')
 		for key, (v1,v2,v3,v4) in self.bigBadness.iteritems(): 
@@ -153,8 +187,13 @@ class SystemMonitor(object):
 		
 		if not os.path.exists(directory):
 			os.mkdir(directory)
+		
+		directory += "/%s" % self.dateAndTime
+		
+		if not os.path.exists(directory):
+			os.mkdir(directory)
 			
-		fileCSV = open('%s/%s_%s.csv'%(directory,signalName,self.dateAndTime),'w')
+		fileCSV = open('%s/%s%s'%(directory,signalName,'.csv'),'w')
 
 		if headerMethod is not None:
 			fileCSV.write(headerMethod(self))

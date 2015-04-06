@@ -10,7 +10,7 @@ class rrScheduler(Scheduler):
 	def __init__(self, env, topology):
 		Scheduler.__init__(self, env, topology)
 
-	def fnSchedule(self,temp): 
+	def fnSchedule(self, temp): 
 		t_start = time.time()
 		'''
 		Descr : A generator function that does the initial placement
@@ -19,7 +19,7 @@ class rrScheduler(Scheduler):
 		'''
 		logging.debug('%s - attempting to schedule %s' % (type(self).__name__, str(temp.keys())))
 		
-		for appName, (nodeUsr,DClist) in temp.iteritems():
+		for appName, (nodeUsr, DClist) in temp.iteritems():
 			currentNodeList = nodeUsr.keys()
 			overloadList = []
 			dcPathList = {}
@@ -27,8 +27,8 @@ class rrScheduler(Scheduler):
 				dcName = dc.getName()
 				paths = []
 				_temp = {}
-				for leafNodeName, nbrUsers in nodeUsr.iteritems():
-					paths.append( ( self.topology.getPath( appName, leafNodeName, dcName ), appName, nbrUsers ) ) # [findPathsDC]
+				for leafNodeName, demand in nodeUsr.iteritems():
+					paths.append( ( self.topology.getPath( appName, leafNodeName, dcName ), appName, {'PRODUCTION':demand}) ) # [findPathsDC]
 					_temp[ (appName, leafNodeName, dcName) ] = self.topology.getPath(appName, leafNodeName, dcName)
 				dcPathList[dcName] = _temp
 				#overload for placing the application on the DC
@@ -51,7 +51,7 @@ class rrScheduler(Scheduler):
 				yield (appName, {dcName:currentNodeList})
 			else: 
 				logging.error('%s - failed to schedule %s, DC overload %s '%(type(self).__name__, appName, str(overloadList)))
-				print '%s - failed to schedule %s, DC overload %s '%(type(self).__name__, appName, str(overloadList))
+				print '%s - failed to schedule %s'%(type(self).__name__, appName)
 				t_end = time.time()
 				self.addMeasurement("FAILED,%s,%s,%f,%i"%(appName, "-", minoverload, (t_end-t_start)))
 				yield (appName, {})

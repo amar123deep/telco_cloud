@@ -29,8 +29,9 @@ class Scheduler(object):
 		self.placements = []
 		
 		return placementsBuffer
-		
-	def removeDC(self,AppDCList):
+	
+	# [DEPRECATED] What is this for?
+	def removeDC(self, AppDCList):
 		'''
 		removes the list of DCs from the table of the topology
 		'''
@@ -39,7 +40,7 @@ class Scheduler(object):
 			dc.terminateApp(appName)
 		self.topology.removeFromTable(AppDCList)
 	
-	
+	# [DEPRECATED]  What is this for?
 	def addAppLeafNode(self, appNodeDict): 
 		"""
 		Descr : This function should be called when new app appears in the 
@@ -62,6 +63,7 @@ class Scheduler(object):
 			
 		return newDict    
 	
+	# [DEPRECATED] What is this for?
 	def generateSolutions(self, dist, numNodes): 
 		_masterList = []
 		baseList = [0]*numNodes 
@@ -71,7 +73,10 @@ class Scheduler(object):
 			dist = dist -1
 		pass
 	
-	# Method depricated 
+	'''
+	######## Neighbourhood ########
+	'''
+	# [DEPRECATED] What is this for?
 	def exploreNeighbour(self, node, dist):
 		"""
 		compute all the possible neighbour at fixed distance h
@@ -98,7 +103,7 @@ class Scheduler(object):
 		print "---result---"
 		return newDict
 	
-	# Method depricated	
+	# [DEPRECATED] What is this for?
 	def lookupNeighbour(self, node, dist): 
 		"""
 		returns all the nodes along with edges (as tuple) at specific distance dist 
@@ -121,7 +126,6 @@ class Scheduler(object):
 				newDict =  _temp1
 		return newDict
 		
-	
 	def findNeighbourGlobal(self,dictAppNode):
 		"""
 		Descr:  Compute the neighbours if possible, node and link
@@ -134,70 +138,28 @@ class Scheduler(object):
 		for app,node in dictAppNode:
 			dictAppNeighbour[app] = node.getChildNodes().append(node.getParentNode())
 		return dictAppNeighbour
-	
-	def evaluateTotaloverload(self, appName, leafNodes, dc):
-		"""
-		Descr : Evaluates total overload from 
-		Input : app and the leaf node where the app should run   
-		Output: return 1 on success
-		"""
-		pass
+
+	'''
+	######## Migration ########
+	'''
+	def doMigration(self, appName, fromNodeName, toNodenName):
+		path = self.topology.findMinPath(fromNodeName, toNodenName)
+		
+		demand = path[0].getAppDemand(appName,'PRODUCTION')
+		
+		duration = 10
+		
+		for element in path:
+			element.incurrTempDemand(appName, demand, duration)
+		
+		yield self.env.timeout(duration)
+		# Unregister application
+		# Remove old paths
+		# Register application in new DC
 	
 	'''
-	######## Measurements ########
+	######## Evaluations ########
 	'''
-	# [DEPRICATED] Sums overload in each resource entity
-	def measureTotaloverload(self):
-		overload = 0
-		
-		enteties = self.topology.getAllDCs() + self.topology.getAllLinks()
-		
-		for entity in enteties:
-			overload += entity.getOverload()
-			
-		return overload
-	
-	# [DEPRICATED] Produce header for 
-	def produceTotaloverloadHeader(self):
-		return 'Total overload'
-	
-	# [DEPRICATED] Sums overload in each resource entity
-	def measureoverload(self):
-		overload = ''
-		
-		enteties = self.topology.getAllDCs() + self.topology.getAllLinks()
-		
-		for entity in enteties:
-			overload += "%f ," % entity.getOverload()
-			
-		return overload
-	
-	# [DEPRICATED] Produce header for 
-	def produceoverloadHeader(self):
-		header = ''
-		
-		enteties = self.topology.getAllDCs() + self.topology.getAllLinks()
-		
-		for entity in enteties:
-			header += entity.getName() + ','
-			
-		return header
-	
-	# [DEPRICATED] Compute total local resource usage for app in appNames and paths 
-	def evaluateLocalResourcesUsage(self, appName, paths):
-		enteties = {}
-		
-		for path in paths.iteritems():
-			population = path[0].getAppPopulation(appName)
-			for entity in path:
-				if entity.getName() not in enteties:
-					enteties[entity.getName()] = {'USAGE':entity.evaluateResourcesUsageExcluding(appName), 'ENTITY':entity}
-				else:
-					usage = entity.evaluateAdditionalResourcesUsage({appName:population})
-					for resourceName, resourceUsage in usage.iteritems():
-						enteties[entity.getName()]['USAGE'][resourceName] += resourceUsage[resourceName]
-		return enteties
-		
 	# Compute total local resource usage for app in appNames and paths 
 	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, demand)
 		enteties = {}

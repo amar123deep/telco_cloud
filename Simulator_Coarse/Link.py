@@ -7,10 +7,10 @@ from Leaf import Leaf
 class Link(Resource):
 	RESOURCE_TYPES = {
 		"100Mbit": {	
-						'NET':	{'CAPACITY':100.0, "THRESHOLD":0.5} 
+						'NET':	{'CAPACITY':20.0} 
 					},
 		"1Gbit": {		
-						'NET':	{'CAPACITY':1000.0, "THRESHOLD":0.5}
+						'NET':	{'CAPACITY':200.0}
 					},
 			}
 
@@ -27,11 +27,11 @@ class Link(Resource):
 			self.properties[resourceName]['LATENCY'] = self.propagation_latency + self.resources[resourceName]['USAGE']/self.resources[resourceName]['CAPACITY']
 
 	# Get link latency
-	def getLatency(self, direction):
-		return self.latency[direction]
+	def getLatency(self, resourceName):
+		return self.properties[resourceName]['LATENCY']
 	
 	# (Resource) Compute resource usage
 	def computeResourceUsage(self):
 		Resource.computeResourceUsage(self)
 		self.computeLatency()
-		self.computeTotalOverload()
+		return self.computeTotalOverload()

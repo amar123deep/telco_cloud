@@ -24,7 +24,7 @@ class Workload(object):
 
 			for (path, appName, leafName, demand) in self.coordinator.getPath(self.data_new[time]):
 				for element in path:
-					element.updateSubscriber(appName, leafName, demand)
+					element.updateDemand(appName, leafName, {'PRODUCTION':demand})
 
 	# Get the last time stamp in the workload
 	def getWorkloadTimeSpan(self):

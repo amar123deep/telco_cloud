@@ -14,8 +14,8 @@ class Resource(object):
 
 		self.peers = {}
 
-		self.subscribers = {}
-		self.nbrSubscribers = 0
+		self.appDemand = {}
+		self.totalDemand = 0.0
 
 		self.overload = 0.0
 
@@ -30,6 +30,14 @@ class Resource(object):
 	def getOverloadFactor(self):
 		return self.overload
 	
+	# Get list subscribing applications
+	def getAppList(self):
+		return self.appDemand.keys()
+	
+	# Get demand for each application, returns a dictionary with demand type as key
+	def getAppDemand(self, appName, demandType):
+		return self.appDemand[appName]['TOTAL'][demandType]
+	
 	# Get peers as toubles, returns a dictionary
 	def getPeersTouple(self):
 		result = []
@@ -40,7 +48,7 @@ class Resource(object):
 					result.append((peer, itsPeer))
 					
 		return result
-		
+
 	# Add peer
 	def addPeer(self, peer):
 		self.peers[peer.getName()] = peer
@@ -49,9 +57,9 @@ class Resource(object):
 	def getName(self):
 		return self.name
 	
-	# Get subscribers
-	def getSubscribers(self):
-		return self.subscribers
+	# Get appDemand
+	def getappDemand(self):
+		return self.appDemand
 	
 	# Check if node has app
 	def hosts(self, app):
@@ -64,44 +72,60 @@ class Resource(object):
 	'''
 	Propagate workload and compute resource usage
 	'''
-	# Update subscribe per leaf per app 
-	def updateSubscriber(self, appName, leafName, nbrUsers):
-		if appName not in self.subscribers:
-			self.subscribers[appName] = {}
-			self.subscribers[appName]['LEAFS'] = {}
+	# Update demand per source per app 
+	def updateDemand(self, appName, sourceNodeName, demand):
+		if appName not in self.appDemand:
+			self.appDemand[appName] = {}
+			self.appDemand[appName]['SOURCE'] = {}
 
-		self.subscribers[appName]['LEAFS'][leafName] = nbrUsers
-
-		self.computeTotalSubscribers()
-
+		self.appDemand[appName]['SOURCE'][sourceNodeName] = demand
+		self.computeTotalappDemand()
 		self.computeResourceUsage()
-		
 		self.computeTotalOverload()
 		
-	# Compute total number of subscribers
-	def computeTotalSubscribers(self):
-		self.nbrSubscribers = 0
-		for appName in self.subscribers:
-			nbrAppSubscribers = 0
-			for leafName in self.subscribers[appName]['LEAFS']:
-				nbrAppSubscribers += self.subscribers[appName]['LEAFS'][leafName]
+		if demand is 0:
+			del self.appDemand[appName]['SOURCE'][sourceNodeName]
+		
+		if len(self.appDemand[appName]['SOURCE']) is 0:
+			del self.appDemand[appName]
+	
+	def incurrTempDemand(self, appName, sourceNodeName, demand, duration):
+		self.updateDemand(appName, sourceNodeName, demand)
+		env.process(self.removeTempDemand(appName, sourceNodeName, duration))
+		
+	def removeTempDemand(self, appName, sourceNodeName, duration):
+		yield self.env.timeout(duration)
+		self.updateDemand(appName, sourceNodeName, 0.0)
+	
+	# Compute total number of appDemand
+	def computeTotalappDemand(self):
+		self.totalDemand = 0.0
+		for appName, appDemand in self.appDemand.iteritems():
+			totalAppDemand = {}
+			for sourceNodeName, sourceDemand in appDemand['SOURCE'].iteritems():
+				for demandType, demand in sourceDemand.iteritems():
+					if demandType not in totalAppDemand:
+						totalAppDemand[demandType] = 0.0
+					totalAppDemand[demandType] += demand
+					self.totalDemand += demand
 			
-			self.subscribers[appName]['TOTAL'] = nbrAppSubscribers
-			self.nbrSubscribers += nbrAppSubscribers
+			appDemand['TOTAL'] = totalAppDemand
 
 	# [Asbstract] Update resource usage
 	def computeResourceUsage(self):
-		for appName in self.subscribers: # For every app
-			for resourceName, resource in self.resources.iteritems(): # Calculate app usage for each resource usage each application's properties
-				resource['APPS'][appName] = self.applications[appName].computeResourceUsage(resourceName, self.subscribers[appName]['TOTAL'])
-
+		for resourceName, resource in self.resources.iteritems(): # Calculate app usage for each resource usage each application's properties
+			for appName, appDemand in self.appDemand.iteritems(): # For every app
+				resource['APPS'][appName] = 0.0
+				for demandType, demand in appDemand['TOTAL'].iteritems():
+					resource['APPS'][appName] += self.applications[appName].computeResourceUsage(resourceName, demand, demandType)
+					
 		for resource in self.resources.itervalues(): # Update usage for each resource 
-			totalSubsucribers = 0 # Total usage for each resource
-			for nbrAppSubscribers in resource['APPS'].itervalues():
-				totalSubsucribers += nbrAppSubscribers
+			totalDemand = 0.0 # Total usage for each resource
+			for totalAppDemand in resource['APPS'].itervalues():
+				totalDemand += totalAppDemand
 
-			resource['USAGE'] = totalSubsucribers
-		
+			resource['USAGE'] = totalDemand
+			
 	# compute app utilization
 	def computeAppUtilization(self):
 		# we want usage of all the applications running in that particular resource
@@ -118,6 +142,7 @@ class Resource(object):
 		result = {}
 		for resourceName, resource in self.resources.iteritems():
 			result[resourceName] = resource['USAGE']/resource['CAPACITY']
+			
 		return result
 
 	# Compute the current overload factor
@@ -146,7 +171,7 @@ class Resource(object):
 	'''
 	# Evalutae hypothecital resource usage
 	def evaluateResourcesUsage(self, targetApps):
-		# Input:    app, nbrUsers
+		# Input:    app, demand
 		# Output:   Total resource usgae for each resource
 		
 		totalUsage = {}
@@ -156,13 +181,13 @@ class Resource(object):
 				if appName not in targetApps:
 					totalUsage[resourceName] += appResourceUsage
 				else:
-					totalUsage[resourceName] += self.applications[appName].computeResourceUsage(resourceName, targetApps[appName])
+					totalUsage[resourceName] += self.applications[appName].computeResourceUsage(resourceName, targetApps[appName], 'PRODUCTION')
 
 		return totalUsage
 		
 	# Evalutae hypothecital resource usage excluding exludeApps
 	def evaluateResourcesUsageExcluding(self, exludeApps):
-		# Input:    app, nbrUsers
+		# Input:    app, demand
 		# Output:   Total resource usgae for each resource
 		
 		totalUsage = {}
@@ -177,13 +202,13 @@ class Resource(object):
 
 	# Evalutae hypothecital resource usage given the addition of targetApps
 	def evaluateAdditionalResourcesUsage(self, targetApps):
-		
 		usage = {}
 		
 		for resourceName in self.resources:
 			usage[resourceName] = 0.0
-			for appName, nbrUsers in targetApps.iteritems():
-				usage[resourceName] += self.applications[appName].computeResourceUsage(resourceName, targetApps[appName])
+			for appName, demand in targetApps.iteritems():
+				for demandType, demandVolume in demand.iteritems():
+					usage[resourceName] += self.applications[appName].computeResourceUsage(resourceName, demandVolume, demandType)
 
 		return usage
 
