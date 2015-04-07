@@ -7,16 +7,19 @@ class Datacentre(Resource):
 	# Data centre sizes
 	RESOURCE_TYPES = {
 		"L":{ 
-				"CPU":			{'CAPACITY':2000.0,"THRESHOLD":0.5},
-				"NET":			{'CAPACITY':2000.0,"THRESHOLD":0.5}
+				"CPU":		{'CAPACITY':2000.0},
+				"NET_UP":	{'CAPACITY':2000.0},
+				"NET_DOWN":	{'CAPACITY':2000.0}
 			},
 		"M":{ 
-				"CPU":			{'CAPACITY':200.0,"THRESHOLD":0.5},
-				"NET":			{'CAPACITY':200.0,"THRESHOLD":0.5}
+				"CPU":		{'CAPACITY':200.0},
+				"NET_UP":	{'CAPACITY':200.0},
+				"NET_DOWN":	{'CAPACITY':200.0}
 			},
 		"S":{ 
-				"CPU":			{'CAPACITY':20.0,"THRESHOLD":0.5},
-				"NET":			{'CAPACITY':20.0,"THRESHOLD":0.5}
+				"CPU":		{'CAPACITY':20.0},
+				"NET_UP":	{'CAPACITY':20.0},
+				"NET_DOWN":	{'CAPACITY':20.0}
 			}
 		}
 	
@@ -42,10 +45,6 @@ class Datacentre(Resource):
 	# Check if node has app
 	def hosts(self, app):
 		return app in self.apps
-		
-	# Method for scheduler to migrate application
-	def migrateApp(self, app, destination):
-		raise NotImplementedError
 
 	# Compute how much resources an application cones and how much it 
 	# contributes to the load of the DC

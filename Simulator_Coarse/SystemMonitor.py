@@ -36,7 +36,7 @@ class SystemMonitor(object):
 			#self.bigBadness[self.env.now] = (systemBadness, dcBadness, linkBadness,dcApp)
 			#l1,l2 = self.measureSystemUtilization()
 			#self.bigUtilization[self.env.now] = (l1,l2)
-			
+
 			yield self.env.timeout(self.time_delta)
 
 			for (signalName, measPointFunc) in self.inputs:
@@ -114,7 +114,7 @@ class SystemMonitor(object):
 				latency = 0
 				
 				for entity in path:
-					latency += entity.getLatency('NET')
+					latency += entity.getLatency('NET_DOWN')
 					
 				latencies[appName].append(latency)
 		

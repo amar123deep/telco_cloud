@@ -1,4 +1,4 @@
-INFO:root:---- 06/04/2015 - 19:21:56 ----
+INFO:root:---- 07/04/2015 - 12:18:08 ----
 INFO:root:Topology generated, with 13 datacentres
 INFO:root:rrScheduler scheduler created
 INFO:root:Simulation started
@@ -9,7 +9,7 @@ DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A0']
 DEBUG:root:Coordinator - Current apps from workload: ['A0']
 DEBUG:root:Coordinator - apps needs to be scheduled : ['A0'] 
 DEBUG:root:rrScheduler - attempting to schedule ['A0']
-DEBUG:root:rrScheduler - scheduled A0 in DC0 with overload 31.000645, [31.00064527045291, 31.001452035349615, 31.016206886404664, 31.016206886404664, 31.016206886404664, 31.014706136029474, 31.014706136029474, 31.01520638615454, 31.00245253559974, 31.01620688640466, 31.01620688640466, 31.01620688640466, 31.00245253559974]
+DEBUG:root:rrScheduler - scheduled A0 in DC0 with overload 31.000250, [31.000250028578453, 31.00150211045514, 31.015513765402424, 31.015513765402424, 31.015513765402424, 31.015213742900926, 31.015213742900926, 31.015313750401425, 31.001702125456138, 31.015513765402424, 31.015513765402424, 31.015513765402424, 31.001702125456138]
 DEBUG:root:----- [1]-----
 DEBUG:root:Coordinator - Handling apps: ['A0'], runnings apps: ['A0'] 
 DEBUG:root:Coordinator - Evaluating A0

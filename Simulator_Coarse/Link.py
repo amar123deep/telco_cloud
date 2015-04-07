@@ -6,20 +6,22 @@ from Leaf import Leaf
 
 class Link(Resource):
 	RESOURCE_TYPES = {
-		"100Mbit": {	
-						'NET':	{'CAPACITY':20.0} 
-					},
-		"1Gbit": {		
-						'NET':	{'CAPACITY':200.0}
-					},
+		"M": {		
+				'NET_UP':	{'CAPACITY':200.0},
+				'NET_DOWN':	{'CAPACITY':200.0} 
+			},
+		"S": {	
+				'NET_UP':	{'CAPACITY':20.0},
+				'NET_DOWN':	{'CAPACITY':20.0} 
 			}
+		}
 
 	def __init__(self, name, env, resources, length, applications):
 		Resource.__init__(self, name, env, resources, applications)
 
 		self.propagation_latency = length/200000000
 		self.properties = {}
-		self.properties.update({'NET':{'LATENCY':0}})
+		self.properties.update({'NET_UP':{'LATENCY':0}, 'NET_DOWN':{'LATENCY':0}})
 
 	# Latency calculation
 	def computeLatency(self): # [TO-DO] Implement actual latency function
@@ -29,7 +31,7 @@ class Link(Resource):
 	# Get link latency
 	def getLatency(self, resourceName):
 		return self.properties[resourceName]['LATENCY']
-	
+
 	# (Resource) Compute resource usage
 	def computeResourceUsage(self):
 		Resource.computeResourceUsage(self)

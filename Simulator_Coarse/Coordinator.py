@@ -4,7 +4,6 @@ class Coordinator(object):
 	'''
 	Descr : coordinates workload changes
 	'''
-
 	def __init__(self, topology, scheduler):
 		self.topology = topology
 		self.scheduler = scheduler
@@ -14,6 +13,33 @@ class Coordinator(object):
 		assert appName in self.registry, "Application not scheduled"
 		return self.registry[appName].keys()[0]
 	
+	def revaluate(self, targetApps):
+		for (appName, dcLeafDict) in self.scheduler.fnSchedule(targetApps):
+			for dcName in dcLeafDict:
+				if dcName is not None:
+					self.registry[appName] = dcLeafDict # Update app registry 
+	
+	'''
+	######## Migration ########
+	'''
+	def migrate(self, appName, fromNodeName, toNodenName):
+		path = self.topology.findMinPath(fromNodeName, toNodenName)
+		
+		demand = path[0].getAppDemand(appName,'PRODUCTION')
+		
+		duration = 10
+		
+		for element in path:
+			element.incurrTempDemand(appName, demand, duration)
+		
+		yield self.env.timeout(duration)
+		# Unregister application
+		# Remove old paths
+		# Register application in new DC
+	
+	'''
+	This can propbably be done more beutiful, but only necessary if we will publish the code. :)
+	'''
 	def getPath(self, appWorkload): # { ... {appName: {leaf: nbrUsers}}...}
 		logging.debug('%s - Handling apps: %s, runnings apps: %s ' % (type(self).__name__, str(appWorkload.keys()), str(self.registry.keys())))
 		'''
@@ -66,7 +92,6 @@ class Coordinator(object):
 		for (appName,name) in removeAppDClist: 
 			del self.registry[appName]	
 	
-
 		self.scheduler.removeDC(removeAppDClist)
 		
 		logging.debug('%s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsNotScheduled.keys())))

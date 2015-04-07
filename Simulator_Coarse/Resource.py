@@ -25,19 +25,19 @@ class Resource(object):
 	# Get peers
 	def getPeers(self):
 		return self.peers
-	
+
 	# Get overload factor 
 	def getOverloadFactor(self):
 		return self.overload
-	
+
 	# Get list subscribing applications
 	def getAppList(self):
 		return self.appDemand.keys()
-	
+
 	# Get demand for each application, returns a dictionary with demand type as key
 	def getAppDemand(self, appName, demandType):
 		return self.appDemand[appName]['TOTAL'][demandType]
-	
+
 	# Get peers as toubles, returns a dictionary
 	def getPeersTouple(self):
 		result = []
@@ -46,29 +46,29 @@ class Resource(object):
 			for itsPeerName, itsPeer in itsPeers.iteritems():
 				if self is not itsPeer:
 					result.append((peer, itsPeer))
-					
+
 		return result
 
 	# Add peer
 	def addPeer(self, peer):
 		self.peers[peer.getName()] = peer
-	
+
 	# Get name of the node
 	def getName(self):
 		return self.name
-	
+
 	# Get appDemand
 	def getappDemand(self):
 		return self.appDemand
-	
+
 	# Check if node has app
 	def hosts(self, app):
 		return False
-	
+
 	# Get  latency
 	def getLatency(self, direction):
 		return 0.0
-	
+
 	'''
 	Propagate workload and compute resource usage
 	'''
@@ -78,16 +78,17 @@ class Resource(object):
 			self.appDemand[appName] = {}
 			self.appDemand[appName]['SOURCE'] = {}
 
+		if demand is 0:
+			del self.appDemand[appName]['SOURCE'][sourceNodeName]
+		
+			if len(self.appDemand[appName]['SOURCE']) is 0:
+				del self.appDemand[appName]
+				del self.resources['APPS'][appName]
+
 		self.appDemand[appName]['SOURCE'][sourceNodeName] = demand
 		self.computeTotalappDemand()
 		self.computeResourceUsage()
 		self.computeTotalOverload()
-		
-		if demand is 0:
-			del self.appDemand[appName]['SOURCE'][sourceNodeName]
-		
-		if len(self.appDemand[appName]['SOURCE']) is 0:
-			del self.appDemand[appName]
 	
 	def incurrTempDemand(self, appName, sourceNodeName, demand, duration):
 		self.updateDemand(appName, sourceNodeName, demand)

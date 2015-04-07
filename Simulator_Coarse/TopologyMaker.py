@@ -36,7 +36,7 @@ class TopologyMaker(object):
 				leafs[child.getName()] = child
 				print "%s X [%s]" % ('\t'*depth, child.getName())
 
-			link = Link('LINK'+str(len(links)), self.env, Link.RESOURCE_TYPES['100Mbit'], 100, self.applications)
+			link = Link('LINK'+str(len(links)), self.env, Link.RESOURCE_TYPES['M'], 100, self.applications)
 			links[link.getName()] = link
 			link.addPeer(child)
 			link.addPeer(parent)

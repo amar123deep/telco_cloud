@@ -46,15 +46,18 @@ class Application(object):
 	TYPES = {
 		'CPU_INTENSIVE':{	
 				'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28), 'MIGRATION':None},
-				'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None}
+				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None},
+				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None}
 			},
 		'NET_INTENSIVE':{
 				'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
-				'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
+				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39*4/7), 'MIGRATION':None},
+				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39*3/7), 'MIGRATION':None}
 			},
-		'NORMAL':{
+		'SYMMETRIC':{
 				'CPU': {'PRODUCTION':LinearAppResrFunc(1.0, 1.0), 'MIGRATION':None},
-				'NET': {'PRODUCTION':LinearAppResrFunc(1.0, 1.0), 'MIGRATION':None}
+				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
+				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None}
 			}
 		}
 	

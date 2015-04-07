@@ -8,7 +8,7 @@ import Filters
 
 from Resource import Resource 
 from Scheduler import Scheduler 
-from rrScheduler import rrScheduler 
+from MinOverloadScheduler import MinOverloadScheduler 
 from TopologyMaker import TopologyMaker
 from SystemMonitor import SystemMonitor
 from Workload import Workload
@@ -18,81 +18,21 @@ from Datacentre import Datacentre
 from Coordinator import Coordinator
 from Topology import Topology
 
-applications = {"A0":Application("A0",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
-							}
-						),
-				"A1":Application("A1",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
-							},
-						),
-				"A2":Application("A2",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
-							}
-						),
-				"A3":Application("A3",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
-							},
-						),
-				"A4":Application("A4",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
-							},
-						),
-				"A5":Application("A5",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
-							}
-						),
-				"A6":Application("A0",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
-							},
-						),
-				"A7":Application("A1",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
-							}
-						),
-				"A8":Application("A2",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
-							},
-						),
-				"A9":Application("A3",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
-							}
-						),
-				"A10":Application("A4",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
-							},
-						),
-				"A11":Application("A5",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28),'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01),'MIGRATION':None}
-							}
-						),
-				"A12":Application("A0",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
-							},
-						),
-				"A13":Application("A1",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39), 'MIGRATION':None}
-							},
-						),
-				"A14":Application("A2",{
-					'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None},
-					'NET': {'PRODUCTION':LinearAppResrFunc(0.0, 1), 'MIGRATION':None}
-							},
-						),
+applications = {"A0":Application("A0", Application.TYPES['CPU_INTENSIVE']),
+				"A1":Application("A1", Application.TYPES['NET_INTENSIVE']),
+				"A2":Application("A2", Application.TYPES['NET_INTENSIVE']),
+				"A3":Application("A3", Application.TYPES['SYMMETRIC']),
+				"A4":Application("A4", Application.TYPES['NET_INTENSIVE']),
+				"A5":Application("A5", Application.TYPES['CPU_INTENSIVE']),
+				"A6":Application("A0", Application.TYPES['NET_INTENSIVE']),
+				"A7":Application("A1", Application.TYPES['SYMMETRIC']),
+				"A8":Application("A2", Application.TYPES['CPU_INTENSIVE']),
+				"A9":Application("A3", Application.TYPES['NET_INTENSIVE']),
+				"A10":Application("A4", Application.TYPES['SYMMETRIC']),
+				"A11":Application("A5", Application.TYPES['NET_INTENSIVE']),
+				"A12":Application("A0", Application.TYPES['CPU_INTENSIVE']),
+				"A13":Application("A1", Application.TYPES['SYMMETRIC']),
+				"A14":Application("A2", Application.TYPES['CPU_INTENSIVE']),
 				}
 
 def main():
@@ -116,7 +56,7 @@ def main():
 	
 	topology = Topology(env, datacentres, links, leafnodes)
 	
-	scheduler = rrScheduler(env,topology)
+	scheduler = MinOverloadScheduler(env,topology)
 	logging.info('%s scheduler created' % type(scheduler).__name__)
 	
 	coordinator = Coordinator(topology, scheduler)

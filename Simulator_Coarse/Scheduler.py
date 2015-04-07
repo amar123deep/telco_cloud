@@ -140,24 +140,6 @@ class Scheduler(object):
 		return dictAppNeighbour
 
 	'''
-	######## Migration ########
-	'''
-	def doMigration(self, appName, fromNodeName, toNodenName):
-		path = self.topology.findMinPath(fromNodeName, toNodenName)
-		
-		demand = path[0].getAppDemand(appName,'PRODUCTION')
-		
-		duration = 10
-		
-		for element in path:
-			element.incurrTempDemand(appName, demand, duration)
-		
-		yield self.env.timeout(duration)
-		# Unregister application
-		# Remove old paths
-		# Register application in new DC
-	
-	'''
 	######## Evaluations ########
 	'''
 	# Compute total local resource usage for app in appNames and paths 
