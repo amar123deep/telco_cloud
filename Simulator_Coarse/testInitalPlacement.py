@@ -17,6 +17,7 @@ from Application import LinearAppResrFunc
 from Datacentre import Datacentre
 from Coordinator import Coordinator
 from Topology import Topology
+from Controller import PeriodicController
 
 applications = {"A0":Application("A0", Application.TYPES['CPU_INTENSIVE']),
 				"A1":Application("A1", Application.TYPES['NET_INTENSIVE']),
@@ -61,7 +62,7 @@ def main():
 	
 	coordinator = Coordinator(topology, scheduler)
 	
-	workload = Workload(env,'workloads/workfile_single.json', coordinator)
+	workload = Workload(env,'workloads/workfile12.json', coordinator)
 	monitor = SystemMonitor(env, 1, topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
@@ -79,6 +80,9 @@ def main():
 	
 	env.process(workload.produceWorkload())
 	env.process(monitor.measure())
+	
+	#logging.info("Contorller started")
+	#controller = PeriodicController(env, coordinator, 2)
 	
 	logging.info("Simulation started")
 	env.run(until=workload.getWorkloadTimeSpan())

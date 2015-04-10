@@ -8,35 +8,53 @@ class Coordinator(object):
 		self.topology = topology
 		self.scheduler = scheduler
 		self.registry = {}
-	
+
 	def getAppPlacement(self, appName):
 		assert appName in self.registry, "Application not scheduled"
 		return self.registry[appName].keys()[0]
-	
-	def revaluate(self, targetApps):
+
+	def revaluateAll(self):
+		targetApps = {}
+
+		for leaf in self.topology.getAllLeafs():
+			leafName = leaf.getName()
+			for appName, demandDict in leaf.getAppDemand().iteritems():
+				if appName not in targetApps:
+					targetApps[appName] = {}
+				
+				totalDemand = 0
+				
+				for demandType, demand in demandDict.iteritems():
+					totalDemand += demand
+				
+				targetApps[appName].update( {leafName: totalDemand} )
+		
+		for appName, totalAppDemand in targetApps.iteritems():
+			targetApps[appName] = (totalAppDemand, self.topology.getAllDCs())
+		
 		for (appName, dcLeafDict) in self.scheduler.fnSchedule(targetApps):
 			for dcName in dcLeafDict:
 				if dcName is not None:
 					self.registry[appName] = dcLeafDict # Update app registry 
-	
+
 	'''
 	######## Migration ########
 	'''
 	def migrate(self, appName, fromNodeName, toNodenName):
 		path = self.topology.findMinPath(fromNodeName, toNodenName)
-		
+
 		demand = path[0].getAppDemand(appName,'PRODUCTION')
-		
+
 		duration = 10
-		
+
 		for element in path:
 			element.incurrTempDemand(appName, demand, duration)
-		
+
 		yield self.env.timeout(duration)
 		# Unregister application
 		# Remove old paths
 		# Register application in new DC
-	
+
 	'''
 	This can propbably be done more beutiful, but only necessary if we will publish the code. :)
 	'''
@@ -75,7 +93,7 @@ class Coordinator(object):
 						logging.debug('%s - Node: %s, User: %d'%(type(self).__name__, leafNodeName,nbrUsrs))
 						logging.debug('%s - Returning path for %s from %s and %s with %i users: %s' % (type(self).__name__, appName, leafNodeName, dcName, nbrUsrs, str(pathName)))
 						yield (path, appName, leafNodeName, nbrUsrs)
-		
+
 		logging.debug('%s - Current apps from workload: %s' % (type(self).__name__, str(currentAPPlist)))
 		#logging.debug('%s- To be Removed' % (type(self).__name__, str(set(self.registry.keys()))-set(currentAPPlist)))
 		#logging.debug('%s- To be Scheduled' % (type(self).__name__, str(set(currentAPPlist)-set(self.registry.keys()))))
@@ -91,11 +109,11 @@ class Coordinator(object):
 			logging.debug('%s - apps need to be removed: %s' % (type(self).__name__, str(removeAppDClist)))
 		for (appName,name) in removeAppDClist: 
 			del self.registry[appName]	
-	
+
 		self.scheduler.removeDC(removeAppDClist)
-		
+	
 		logging.debug('%s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsNotScheduled.keys())))
-		
+
 		for (appName, dcLeafDict) in self.scheduler.fnSchedule(appsNotScheduled):
 			for dcName in dcLeafDict:
 				if dcName is not None:

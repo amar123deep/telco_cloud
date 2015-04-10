@@ -25,6 +25,10 @@ class Leaf(Resource):
 	def updateDemand(self, appName, leafName, demand):
 		self.appDemand[appName] = demand
 
+	# Get app demand
+	def getAppDemand(self):
+		return self.appDemand
+
 	# Override - Update resource usage
 	def computeResourceUsage(self):
 		pass
