@@ -4,10 +4,13 @@ class Coordinator(object):
 	'''
 	Descr : coordinates workload changes
 	'''
-	def __init__(self, topology, scheduler):
+	def __init__(self, env, topology, scheduler):
+		self.env = env
 		self.topology = topology
 		self.scheduler = scheduler
 		self.registry = {}
+
+		#env.process(self.clearResources())
 
 	def getAppPlacement(self, appName):
 		assert appName in self.registry, "Application not scheduled"
@@ -21,21 +24,29 @@ class Coordinator(object):
 			for appName, demandDict in leaf.getAppDemand().iteritems():
 				if appName not in targetApps:
 					targetApps[appName] = {}
-				
+
 				totalDemand = 0
-				
+
 				for demandType, demand in demandDict.iteritems():
 					totalDemand += demand
-				
-				targetApps[appName].update( {leafName: totalDemand} )
+
+				targetApps[appName].update( {leafName: totalDemand} ) 
+
+		targetConstellations = {}
 		
 		for appName, totalAppDemand in targetApps.iteritems():
-			targetApps[appName] = (totalAppDemand, self.topology.getAllDCs())
-		
-		for (appName, dcLeafDict) in self.scheduler.fnSchedule(targetApps):
+			targetConstellations[appName] = (totalAppDemand, self.topology.getAllDCs())
+
+		for (appName, dcLeafDict) in self.scheduler.fnSchedule(targetConstellations):
 			for dcName in dcLeafDict:
 				if dcName is not None:
-					self.registry[appName] = dcLeafDict # Update app registry 
+					for currentDC in dcLeafDict.keys():
+						if currentDC not in self.registry[appName]:
+							print "%s - %s migrated from %s to %s" % (self.env.now, appName, self.registry[appName].keys(), dcLeafDict.keys())
+							for currentDCName in self.registry[appName]:
+								self.clearPaths(appName, currentDCName)
+							self.updateDemand(appName, dcName, targetApps[appName])
+							self.registry[appName] = dcLeafDict # Update app registry 
 
 	'''
 	######## Migration ########
@@ -45,20 +56,48 @@ class Coordinator(object):
 
 		demand = path[0].getAppDemand(appName,'PRODUCTION')
 
-		duration = 10
+		duration = 2
 
-		for element in path:
-			element.incurrTempDemand(appName, demand, duration)
+	'''
+	Clear all previous paths
+	'''
+	def clearPaths(self, appName, dcName):
+		leafNames = self.topology.getAllLeafNames()
+		for leafName in leafNames:
+			path = self.topology.getPath(appName, leafName, dcName)
+			for entity in path:
+				#print "%s overload Before : %s" % (entity.getName(), entity.getOverloadFactor())
+				entity.clearDemand(appName)
+				#print "%s overload After : %s" % (entity.getName(), entity.getOverloadFactor())
 
-		yield self.env.timeout(duration)
-		# Unregister application
-		# Remove old paths
-		# Register application in new DC
+	'''
+	Update demand
+	'''
+	def updateDemand(self, appName, dcName, leafDemand):
+		for leafName, leafDemand in leafDemand.iteritems():
+			path = self.topology.getPath(appName, leafName, dcName)
+			for entity in path:
+				entity.updateDemand(appName, leafName, {'PRODUCTION':leafDemand})
 
+	
+	
+	def getPath(self,appWorkload):
+		'''
+		
+		'''
+		logging.debug('%s - Handling apps: %s, runnings apps: %s ' % (type(self).__name__, str(appWorkload.keys()), str(self.registry.keys())))
+		# All apps from workload at current time instant 
+		currentAPPlist = appWorkload.keys()
+		# we store apps that's need to be scheduled and are absent in the registry
+		appsNotScheduled = {}
+		
+		
+		
+		
 	'''
 	This can propbably be done more beutiful, but only necessary if we will publish the code. :)
 	'''
-	def getPath(self, appWorkload): # { ... {appName: {leaf: nbrUsers}}...}
+	def getPath_v1(self, appWorkload): # { ... {appName: {leaf: nbrUsers}}...}
 		logging.debug('%s - Handling apps: %s, runnings apps: %s ' % (type(self).__name__, str(appWorkload.keys()), str(self.registry.keys())))
 		'''
 		Descr : A generator function, yield results and resumes, so iterate over 
@@ -79,7 +118,7 @@ class Coordinator(object):
 				logging.debug('%s - %s is running' % (type(self).__name__, appName))
 				# change here
 				dcLeafDict = self.registry[appName]
-				for dcName,prevLeafList in dcLeafDict.iteritems():
+				for dcName, prevLeafList in dcLeafDict.iteritems():
 					currentLeafList = nodeUser.keys()
 					# Leafs with workload 0 to be updated 
 					diffLeaf = set(prevLeafList)-set(currentLeafList)
@@ -95,10 +134,6 @@ class Coordinator(object):
 						yield (path, appName, leafNodeName, nbrUsrs)
 
 		logging.debug('%s - Current apps from workload: %s' % (type(self).__name__, str(currentAPPlist)))
-		#logging.debug('%s- To be Removed' % (type(self).__name__, str(set(self.registry.keys()))-set(currentAPPlist)))
-		#logging.debug('%s- To be Scheduled' % (type(self).__name__, str(set(currentAPPlist)-set(self.registry.keys()))))
-		#logging.debug('%s- To be called for path' % (type(self).__name__, str()))
-		# find all the apps to be removed and send it to the scheduler
 		removeAppDClist = []
 		for appName, dcLeafDict in self.registry.iteritems():
 			for dcName in dcLeafDict.keys():
@@ -108,7 +143,7 @@ class Coordinator(object):
 					# ask scheduler to remove also from the topology table
 			logging.debug('%s - apps need to be removed: %s' % (type(self).__name__, str(removeAppDClist)))
 		for (appName,name) in removeAppDClist: 
-			del self.registry[appName]	
+			del self.registry[appName]
 
 		self.scheduler.removeDC(removeAppDClist)
 	

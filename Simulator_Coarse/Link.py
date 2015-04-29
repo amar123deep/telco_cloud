@@ -7,12 +7,12 @@ from Leaf import Leaf
 class Link(Resource):
 	RESOURCE_TYPES = {
 		"M": {		
-				'NET_UP':	{'CAPACITY':200.0},
-				'NET_DOWN':	{'CAPACITY':200.0} 
+				'NET_UP':	{'CAPACITY':40000.0},
+				'NET_DOWN':	{'CAPACITY':40000.0} 
 			},
 		"S": {	
-				'NET_UP':	{'CAPACITY':20.0},
-				'NET_DOWN':	{'CAPACITY':20.0} 
+				'NET_UP':	{'CAPACITY':4000.0},
+				'NET_DOWN':	{'CAPACITY':4000.0} 
 			}
 		}
 

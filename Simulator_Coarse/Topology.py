@@ -1,6 +1,6 @@
 import sys
 from Link import Link
-
+from Datacentre import Datacentre
 class Topology: 
 	'''
 	Descr : traversing, finding path between any two nodes 
@@ -41,6 +41,10 @@ class Topology:
 			result.append(self.leafs[leafName])
 		
 		return result
+		
+	# Return all leafs
+	def getAllLeafNames(self):
+		return self.leafs.keys()
 	
 	def getPath(self, appName, fromNodeName, toNodeName):
 		#assert type(appName) is str, "Topology.getPath : appName is not a string"
@@ -125,36 +129,6 @@ class Topology:
 		assert min_path is not None, "Topology: No min path found"
 
 		return min_path
-
-	def exploreNeighbour(self, nodeName, dist):
-		"""
-		compute all the possible neighbour at fixed distance h
-		"""
-		node = self.getNode(nodeName)
-		
-		newDict = {node.getName():{'N_NODE':node,'EDGE':[]}}
-		d = 0
-		while d< dist: 
-			d = d+1
-			#print newDict
-			print "----------"
-			_temp1 = {}
-			for nodeAttributes in newDict.itervalues(): 
-				#print nodeAttributes
-				tempListTuples = nodeAttributes['N_NODE'].getPeersTouple()
-				_temp = {}
-				for (e,v) in tempListTuples:
-					_temp[v.getName()] = {'N_NODE':v,'EDGE':nodeAttributes['EDGE']+[e]}
-					#_temp[v.getName()] = {'N_NODE':v,'EDGE':[nodeAttributes['EDGE'],e]}
-				# to add the previous edges
-				_temp1  = dict(_temp.items() + _temp1.items())
-				newDict =  _temp1
-		if node.getName() in newDict:
-			del newDict[node.getName()]
-		print "---result---"
-		print newDict
-		return newDict
-	
 	def lookupNeighbour(self, nodeName, dist): 
 		"""
 		returns all the nodes along with edges (as tuple) at specific distance dist 
@@ -178,6 +152,68 @@ class Topology:
 				_temp1  = dict(_temp.items() + newDict.items())
 				newDict =  _temp1
 		return newDict
+		
+	def findAllNeighbour(self, nodeName,dist): 
+		'''
+		returns name of all the nodes at a distance
+		'''
+		node = self.getNode(nodeName)
+		listNode = [node]
+		listNodeName = []
+		d = 0 
+		while d < dist: 
+			d = d+1 
+			temp1 = []
+			for n in listNode:
+				tempNodeTuple = n.getPeersTouple()
+				temp = []
+				for (e,v) in tempNodeTuple:
+					temp.append(v)
+				temp1 = temp +temp1
+				listNode = temp1
+		s_list = set(listNode)
+		l_lsit = list(s_list)
+
+		if node in l_lsit:
+			l_lsit.remove(node)
+		for x in l_lsit:
+			if isinstance(x, Datacentre):
+				listNodeName.append(x.getName())
+		return listNodeName
+				
+		
+	def exploreNeighbour(self, nodeName, dist):
+		"""
+		compute all the possible neighbour at fixed distance h
+		"""
+		node = self.getNode(nodeName)
+		
+		newDict = {node.getName():{'N_NODE':node,'EDGE':[]}}
+		d = 0
+		while d< dist: 
+			d = d+1
+			#print newDict
+			print "----------"
+			_temp1 = {}
+			for nodeAttributes in newDict.itervalues(): 
+				#print nodeAttributes
+				
+				#print type(nodeAttributes['N_NODE'])
+				tempListTuples = nodeAttributes['N_NODE'].getPeersTouple()
+				print tempListTuples
+				_temp = {}
+				for (e,v) in tempListTuples:
+					_temp[v.getName()] = {'N_NODE':v,'EDGE':nodeAttributes['EDGE']+[e]}
+					#_temp[v.getName()] = {'N_NODE':v,'EDGE':[nodeAttributes['EDGE'],e]}
+				# to add the previous edges
+				_temp1  = dict(_temp.items() + _temp1.items())
+				newDict =  _temp1
+		if node.getName() in newDict:
+			del newDict[node.getName()]
+		print "---result---"
+		print newDict
+		return newDict
+	
 		
 	def getNode(self, nodeName):
 		if nodeName in self.datacentres:

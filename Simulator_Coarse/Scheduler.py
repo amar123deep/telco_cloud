@@ -9,13 +9,28 @@ class Scheduler(object):
 	"""
 	appNodeDictGlobal = {}
 		
-	def __init__(self, env, topology):
+	def __init__(self, env, topology, coordinator):
 		self.env = env
 		self.topology = topology
+		self.coordinator = coordinator
 		self.placements = []
+		self.measuredSystemOverload = float('inf')
+		self.placementRegistry = {}
 		
 		#self.monitor.registerSignal( "PLACEMENTS" )
 		#self.monitor.registerOutput( [ ("PLACEMENTS", SystemMonitor.fileCSVOutput, self.composePlacementsHeader) ] )
+	
+	def recordMeasuredSystemOverload(self, signalName, signalValue):
+		self.measuredSystemOverload = signalValue
+	
+	def recordPlacement(self, appName, dcName, overload):
+		self.placementRegistry[appName] = (dcName, overload)
+		
+	def getPlacementHistory(self, appName):
+		if appName in self.placementRegistry:
+			return self.placementRegistry[appName]
+		else:
+			return (None, float('inf'))
 	
 	def addMeasurement(self, data):
 		self.placements.append(data)
@@ -50,7 +65,7 @@ class Scheduler(object):
 		"""
 		overload = self.getoverloadNodes(appNodeDict)
 		
-	def lookupDistH (self,nodeList,dist): 
+	def lookupDistH (self,nodeList,dist):
 		"""
 		Descr : compute all the neighbour for distance less than and equal to dist
 				
@@ -145,15 +160,14 @@ class Scheduler(object):
 	# Compute total local resource usage for app in appNames and paths 
 	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, demand)
 		enteties = {}
-		
 		for (path, appName, demand) in appPlacement:
 			for entity in path:
 				if entity.getName() not in enteties:
 					enteties[entity.getName()] = {'USAGE':entity.evaluateResourcesUsageExcluding(appName), 'ENTITY':entity}
-				else:
-					usage = entity.evaluateAdditionalResourcesUsage({appName:demand})
-					for resourceName, resourceUsage in usage.iteritems():
-						enteties[entity.getName()]['USAGE'][resourceName] += resourceUsage
+				
+				usage = entity.evaluateAdditionalResourcesUsage({appName:demand})
+				for resourceName, resourceUsage in usage.iteritems():
+					enteties[entity.getName()]['USAGE'][resourceName] += resourceUsage
 						
 		return enteties
 	
@@ -171,7 +185,9 @@ class Scheduler(object):
 		overloadFactor = 0
 
 		for entity in entities.itervalues():
-			overloadFactor += entity['ENTITY'].evaluateAggregateOverload(entity['USAGE'])
+			entitiyOverload = entity['ENTITY'].evaluateAggregateOverload(entity['USAGE'])
+			
+			overloadFactor += entitiyOverload
 		
 		return overloadFactor	
 	

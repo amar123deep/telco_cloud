@@ -23,11 +23,11 @@ class Leaf(Resource):
 
 	# Update subscribe per leaf per app 
 	def updateDemand(self, appName, leafName, demand):
-		self.appDemand[appName] = demand
+		self.appDemands[appName] = demand
 
 	# Get app demand
 	def getAppDemand(self):
-		return self.appDemand
+		return self.appDemands
 
 	# Override - Update resource usage
 	def computeResourceUsage(self):
@@ -46,11 +46,11 @@ class Leaf(Resource):
 	# Get total population
 	def getTotalPopulation(self):
 		result = 0
-		for appSubscribers in self.appDemand.itervalues():
+		for appSubscribers in self.appDemands.itervalues():
 			result += appSubscribers['TOTAL']
 		
 		return result
 		
 	# Get population for an app
 	def getAppPopulation(self, appName):
-		return self.appDemand[appName]
+		return self.appDemands[appName]

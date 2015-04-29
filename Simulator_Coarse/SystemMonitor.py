@@ -5,7 +5,7 @@ import os
 
 class SystemMonitor(object):
 	
-	def __init__(self, env, time_delta, topology, coordinator, scheduler, inputs, outputs, filters):
+	def __init__(self, env, time_delta, outputFolder, topology, coordinator, scheduler, inputs, outputs, filters):
 		self.env = env
 		self.topology = topology
 		self.coordinator = coordinator
@@ -14,15 +14,16 @@ class SystemMonitor(object):
 		self.outputs = outputs
 		self.filters = filters 
 		self.scheduler = scheduler
-		
+		self.outputFolder = outputFolder
+
 		self.signals = {}
-		
+
 		self.dateAndTime = time.strftime("%d-%m-%Y_%H:%M:%S")
 		self.separator = ","
 
 		for (signalName, measPointFunc) in self.inputs:
 			self.signals[signalName] = []
-			
+
 		for (inputSignalName, outputSignalName, filterFunc) in self.filters:
 			self.signals[outputSignalName] = []
 
@@ -41,7 +42,7 @@ class SystemMonitor(object):
 
 			for (signalName, measPointFunc) in self.inputs:
 				self.signals[signalName].append((self.env.now, measPointFunc(self)))
-			
+
 			for (inputSignalName, outputSignalName, filterFunc) in self.filters:
 				self.signals[outputSignalName].append((self.env.now, filterFunc(self.signals[inputSignalName][-1])))
 
@@ -50,7 +51,7 @@ class SystemMonitor(object):
 	'''
 	def getPlacementBuffer(self):
 		return self.scheduler.getPlacementBuffer()
-	
+
 	def measureComponentResourceUtilisation(self): 
 		componentResourceUtilization = ''
 		
@@ -61,7 +62,7 @@ class SystemMonitor(object):
 				componentResourceUtilization += "%s%s%f%s" % (resourceName, self.separator, resourceUtilisation, self.separator)
 
 		return componentResourceUtilization
-	
+
 	def measureSystemUtilization(self): 
 		dcUtilization = []
 		linkUtilization = []
@@ -70,13 +71,13 @@ class SystemMonitor(object):
 			for dc in sorted(dcList): 
 				dcUtilization.append(dc.computeAppUtilization())
 			return dcUtilization
-		
+
 		def measureLinkUtilization(): 
 			linkList = self.topology.getAllLinks()
 			for link in sorted(linkList): 
 				linkUtilization.append(link.computeAppUtilization())
 			return linkUtilization
-		
+
 		return measureDCUtilization(), measureLinkUtilization()
 	
 	def measureComponentOverloadFactor(self): 
@@ -89,20 +90,20 @@ class SystemMonitor(object):
 
 	def measureSystemOverloaFactor(self):
 		result = 0
-		
+
 		for entity in (self.topology.getAllLinks() + self.topology.getAllDCs()):
 			result += entity.getOverloadFactor()
-	
+
 		return result
-	
+
 	def measureApplicationLatency(self):
 		leafs = self.topology.getAllLeafs()
-		
+
 		latencies = {}
-		
+
 		for leafNode in leafs:
 			leafNodeName = leafNode.getName()
-			
+
 			for appName in leafNode.getAppList():
 				if appName not in latencies:
 					latencies[appName] = []
@@ -188,12 +189,12 @@ class SystemMonitor(object):
 		if not os.path.exists(directory):
 			os.mkdir(directory)
 		
-		directory += "/%s" % self.dateAndTime
+		directory += "/%s" % self.outputFolder
 		
 		if not os.path.exists(directory):
 			os.mkdir(directory)
 			
-		fileCSV = open('%s/%s%s'%(directory,signalName,'.csv'),'w')
+		fileCSV = open('%s/%s%s'%(directory, signalName,'.csv'),'w')
 
 		if headerMethod is not None:
 			fileCSV.write(headerMethod(self))

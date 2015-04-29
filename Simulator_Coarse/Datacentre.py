@@ -7,19 +7,19 @@ class Datacentre(Resource):
 	# Data centre sizes
 	RESOURCE_TYPES = {
 		"L":{ 
+				"CPU":		{'CAPACITY':200000.0},
+				"NET_UP":	{'CAPACITY':200000.0},
+				"NET_DOWN":	{'CAPACITY':200000.0}
+			},
+		"M":{ 
+				"CPU":		{'CAPACITY':20000.0},
+				"NET_UP":	{'CAPACITY':20000.0},
+				"NET_DOWN":	{'CAPACITY':20000.0}
+			},
+		"S":{ 
 				"CPU":		{'CAPACITY':2000.0},
 				"NET_UP":	{'CAPACITY':2000.0},
 				"NET_DOWN":	{'CAPACITY':2000.0}
-			},
-		"M":{ 
-				"CPU":		{'CAPACITY':200.0},
-				"NET_UP":	{'CAPACITY':200.0},
-				"NET_DOWN":	{'CAPACITY':200.0}
-			},
-		"S":{ 
-				"CPU":		{'CAPACITY':20.0},
-				"NET_UP":	{'CAPACITY':20.0},
-				"NET_DOWN":	{'CAPACITY':20.0}
 			}
 		}
 	
