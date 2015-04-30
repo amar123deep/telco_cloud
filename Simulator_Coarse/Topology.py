@@ -22,13 +22,18 @@ class Topology:
 			result.append(self.datacentres[dcName])
 		
 		return result
+	def getAllDCsName(self):
+		result = []
 		
+		for dcName in sorted(self.datacentres, key=lambda x: str(x)):
+			result.append(dcName)
+		return result
+	
 	# Return all Links 
 	def getAllLinks(self):
 		result = []
 		
 		for linkName in sorted(self.links, key=lambda x: str(x)):
-			
 			result.append(self.links[linkName])
 		
 		return result
@@ -42,7 +47,7 @@ class Topology:
 		
 		return result
 		
-	# Return all leafs
+	# Return all leaf names
 	def getAllLeafNames(self):
 		return self.leafs.keys()
 	

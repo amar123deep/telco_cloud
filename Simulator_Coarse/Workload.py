@@ -18,14 +18,12 @@ class Workload(object):
 
 		for time in sorted(self.data_new, key=lambda x: int(x)): # Time progresses whenever there is a change
 			yield self.env.timeout(int(time)-prev_time) # Needed in runtime
-			logging.debug("----- [%s]-----" % time)
+			logging.debug("----- [time = %s] -----" % time)
+			print "----- [time = %s] -----" % time
 
 			prev_time = self.env.now
-
-			for (path, appName, leafName, demand) in self.coordinator.getPath(self.data_new[time]):
-				for element in path:
-					element.updateDemand(appName, leafName, {'PRODUCTION':demand})
-
+			self.coordinator.processWorkload(self.data_new[time])
+			
 	# Get the last time stamp in the workload
 	def getWorkloadTimeSpan(self):
-		return sorted(self.data_new, key=lambda x: int(x))[-1]
+		return float(sorted(self.data_new, key=lambda x: int(x))[-1])+1

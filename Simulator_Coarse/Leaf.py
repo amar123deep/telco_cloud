@@ -1,6 +1,6 @@
 import simpy
 
-from Resource import Resource
+from Resource import Resource,LinearCostFunc,NoCostFunc,BarrierFunc
 
 class Leaf(Resource):
 
@@ -23,7 +23,7 @@ class Leaf(Resource):
 
 	# Update subscribe per leaf per app 
 	def updateDemand(self, appName, leafName, demand):
-		self.appDemands[appName] = demand
+		self.appDemands[appName] = {leafName:demand}
 
 	# Get app demand
 	def getAppDemand(self):

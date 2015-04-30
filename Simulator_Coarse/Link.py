@@ -1,18 +1,17 @@
 import simpy
 
-from Resource import Resource
-from Datacentre import Datacentre
+from Resource import Resource,LinearCostFunc,NoCostFunc,BarrierFunc
 from Leaf import Leaf
 
 class Link(Resource):
 	RESOURCE_TYPES = {
 		"M": {		
-				'NET_UP':	{'CAPACITY':40000.0},
-				'NET_DOWN':	{'CAPACITY':40000.0} 
+				'NET_UP':	{'CAPACITY':40000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1},
+				'NET_DOWN':	{'CAPACITY':40000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1} 
 			},
 		"S": {	
-				'NET_UP':	{'CAPACITY':4000.0},
-				'NET_DOWN':	{'CAPACITY':4000.0} 
+				'NET_UP':	{'CAPACITY':4000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1},
+				'NET_DOWN':	{'CAPACITY':4000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1} 
 			}
 		}
 
@@ -36,4 +35,4 @@ class Link(Resource):
 	def computeResourceUsage(self):
 		Resource.computeResourceUsage(self)
 		self.computeLatency()
-		return self.computeTotalOverload()
+		return self.computeTotalCost()

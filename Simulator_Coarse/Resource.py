@@ -1,5 +1,31 @@
 import simpy
 
+class LinearCostFunc(object):
+	def __init__(self, a= 1, b= 0):
+		self.a = a
+		self.b = b
+		
+	def compute(self, usage):
+		return  self.a*usage + self.b
+
+class BarrierFunc(object):# Compute overload for a resource
+	def __init__(self, a= -1, b= -1):
+		self.a = a
+		self.b = b
+	
+	def compute(self, normAvailRes):
+		'''
+		 ax +b + 1/(1-x)
+		'''
+		if normAvailRes >= 1:
+			return float('inf')
+		else:
+			return self.a*normAvailRes+self.b+1/(1-normAvailRes)
+
+class NoCostFunc(object):
+	def compute(self, usage):
+		return 0
+
 class Resource(object):
 	
 	def __init__(self, name, env, resources, applications):
@@ -8,17 +34,18 @@ class Resource(object):
 		self.resources = resources 
 		self.applications = applications
 
+		assert isinstance(resources, dict), "%s : resources is not a dict - %s" %(self.getName(), resources)
+		
 		# Append internal resource properties
 		for resource in self.resources.itervalues():
-			resource.update({'USAGE':0.0, 'OVERLOAD':1.0, 'APPS':{}})
+			resource.update({'USAGE':0.0, 'COST':1.0, 'APPS':{}})
 
 		self.peers = {}
 
 		self.appDemands = {}
 		self.totalDemand = 0.0
 
-		self.overload = 0.0
-
+		self.cost = 0.0
 	'''
 	Attribute getters
 	'''
@@ -27,8 +54,8 @@ class Resource(object):
 		return self.peers
 
 	# Get overload factor 
-	def getOverloadFactor(self):
-		return self.overload
+	def getCurrentCost(self):
+		return self.cost
 
 	# Get list subscribing applications
 	def getAppList(self):
@@ -46,7 +73,6 @@ class Resource(object):
 			for itsPeerName, itsPeer in itsPeers.iteritems():
 				if self is not itsPeer:
 					result.append((peer, itsPeer))
-
 		return result
 
 	# Add peer
@@ -75,7 +101,7 @@ class Resource(object):
 		
 		self.computeTotalappDemand()
 		self.computeResourceUsage()
-		self.computeTotalOverload()
+		self.computeTotalCost()
 				
 	'''
 	Propagate workload and compute resource usage
@@ -87,29 +113,13 @@ class Resource(object):
 			self.appDemands[appName]['SOURCE'] = {}
 
 		self.appDemands[appName]['SOURCE'][sourceNodeName] = demand
-
-		#print self.appDemands
-		
-		#if demand is 0:
-		#	del self.appDemands[appName]['SOURCE'][sourceNodeName]
-		#	
-		#	if len(self.appDemands[appName]['SOURCE']) is 0:
-		#		del self.appDemands[appName]
-		#		del self.resources['APPS'][appName]
-		#else:
-		#	self.appDemands[appName]['SOURCE'][sourceNodeName] = demand
-
 		self.computeTotalappDemand()
 		self.computeResourceUsage()
-		self.computeTotalOverload()
+		self.computeTotalCost()
 
 	def clearDemand(self, appName):
 		if appName in self.appDemands:
 			del self.appDemands[appName]
-
-		#self.computeTotalappDemand()
-		#self.computeResourceUsage()
-		#self.computeTotalOverload()
 
 	def incurrTempDemand(self, appName, sourceNodeName, demand, duration):
 		self.updateDemand(appName, sourceNodeName, demand)
@@ -126,7 +136,7 @@ class Resource(object):
 		for appName, appDemand in self.appDemands.iteritems():
 			totalAppDemand = {}
 
-			assert 'SOURCE' in appDemand, "Blurp : %s" % appDemand
+			assert isinstance(appDemand['SOURCE'], dict), "%s : appDemand['SOURCE'] is not a dict - %s" %(self.getName(), appDemand['SOURCE'])
 
 			for sourceDemand in appDemand['SOURCE'].itervalues():
 				for demandType, demand in sourceDemand.iteritems():
@@ -146,8 +156,11 @@ class Resource(object):
 				for demandType, demand in appDemand['TOTAL'].iteritems():
 					resource['APPS'][appName] += self.applications[appName].computeResourceUsage(resourceName, demand, demandType)
 
+		assert isinstance(self.resources, dict), "%s : resources is not a dict - %s" %(self.getName(), self.resources)
+
 		for resourceName, resource in self.resources.iteritems(): # Update usage for each resource 
 			totalDemand = 0.0 # Total usage for each resource
+			assert isinstance(resource['APPS'], dict), "%s : resource['APPS'] is not a dict - %s" %(self.getName(), resource['APPS'])
 			for totalAppDemand in resource['APPS'].itervalues():
 				totalDemand += totalAppDemand
 
@@ -173,29 +186,27 @@ class Resource(object):
 			result[resourceName] = resource['USAGE']/resource['CAPACITY']
 
 		return result
-
+	
+	
+	
 	# Compute the current overload factor
-	def computeTotalOverload(self): 
+	def computeTotalCost(self):
+		'''
+		Total = app_execution + mu*overload_cost
+		param mu:  
+		'''
 		result = 0.0
-
+		# compute the app + overload cost
 		for resourceName, resource in self.resources.iteritems():
 			#print "%s - resource %s - usage %s" % (self.getName(), resourceName, resource['USAGE'])
-			overload = self.computeOverload(
-				resource['USAGE']
-				/resource['CAPACITY'])
-
-			resource['OVERLOAD'] = overload
-			result += overload
-
-		self.overload = result
-
-	# Compute overload for a resource
-	def computeOverload(self, normAvailRes):
-		if normAvailRes >= 1:
-			return float('inf')
-		else:
-			return 1/(1-normAvailRes)
+			overload = resource['OVERLOADCOST'].compute(resource['USAGE']/resource['CAPACITY'])
+			cost = resource['EXECOST'].compute(resource['USAGE'])
 			
+			resource['COST'] = resource['MU']*overload + cost
+			result += resource['COST']
+
+		self.cost = result
+
 	'''
 	Evaluation of resource usage when scheduling
 	'''
@@ -212,9 +223,8 @@ class Resource(object):
 					totalUsage[resourceName] += appResourceUsage
 				else:
 					totalUsage[resourceName] += self.applications[appName].computeResourceUsage(resourceName, targetApps[appName], 'PRODUCTION')
-
 		return totalUsage
-		
+
 	# Evalutae hypothecital resource usage excluding exludeApps
 	def evaluateResourcesUsageExcluding(self, exludeApps):
 		# Input:    app, demand
@@ -245,15 +255,18 @@ class Resource(object):
 	'''
 	Evalutae hypothecital badness usage given the addition of targetApps
 	'''
-	def evaluateAggregateOverload(self, targetResources):
-		overload = 1
-
+	def evaluateAggregateCost(self, targetResources):
+		result = 0.0
+		# compute the app + overload cost
 		for resourceName, resourceUsage in targetResources.iteritems():
-			overload *= self.computeOverload(resourceUsage/self.resources[resourceName]['CAPACITY'])
-		
-			#print "%s, %s, %s/%s=%s" % (self.getName(), resourceName, resourceUsage, self.resources[resourceName]['CAPACITY'], overload)
-		
-		return overload
+			resource = self.resources[resourceName]
+			#print "%s - resource %s - usage %s" % (self.getName(), resourceName, resource['USAGE'])
+			overload = resource['OVERLOADCOST'].compute(resourceUsage/resource['CAPACITY'])
+			cost = resource['EXECOST'].compute(resourceUsage)
+			
+			result += resource['MU']*overload + cost
+	
+		return result
 	
 	# Evalutae if an application can be accomodated in the infrastucture
 	def willAppFit(self, targetApps):

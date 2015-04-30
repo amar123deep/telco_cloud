@@ -1,25 +1,25 @@
 import simpy
 
-from Resource import Resource
+from Resource import Resource,LinearCostFunc,NoCostFunc,BarrierFunc
 
 class Datacentre(Resource):
 	
 	# Data centre sizes
 	RESOURCE_TYPES = {
 		"L":{ 
-				"CPU":		{'CAPACITY':200000.0},
-				"NET_UP":	{'CAPACITY':200000.0},
-				"NET_DOWN":	{'CAPACITY':200000.0}
+				"CPU":		{'CAPACITY':200000.0, 'EXECOST': LinearCostFunc(1,0.0),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
+				"NET_UP":	{'CAPACITY':200000.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
+				"NET_DOWN":	{'CAPACITY':200000.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(1,0),'MU':1}
 			},
 		"M":{ 
-				"CPU":		{'CAPACITY':20000.0},
-				"NET_UP":	{'CAPACITY':20000.0},
-				"NET_DOWN":	{'CAPACITY':20000.0}
+				"CPU":		{'CAPACITY':20000.0, 'EXECOST': LinearCostFunc(2,0.0),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
+				"NET_UP":	{'CAPACITY':20000.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':BarrierFunc(1,0),'MU':1},
+				"NET_DOWN":	{'CAPACITY':20000.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(),'MU':1}
 			},
 		"S":{ 
-				"CPU":		{'CAPACITY':2000.0},
-				"NET_UP":	{'CAPACITY':2000.0},
-				"NET_DOWN":	{'CAPACITY':2000.0}
+				"CPU":		{'CAPACITY':2000.0, 'EXECOST': LinearCostFunc(4,0.0),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
+				"NET_UP":	{'CAPACITY':2000.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':2000.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(),'MU':1}
 			}
 		}
 	
@@ -50,4 +50,4 @@ class Datacentre(Resource):
 	# contributes to the load of the DC
 	def computeResourceUsage(self):
 		Resource.computeResourceUsage(self)
-		return self.computeTotalOverload()
+		return self.computeTotalCost()

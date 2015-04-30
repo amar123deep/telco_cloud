@@ -9,154 +9,38 @@ class Scheduler(object):
 	"""
 	appNodeDictGlobal = {}
 		
-	def __init__(self, env, topology, coordinator):
+	def __init__(self, env, topology):
 		self.env = env
 		self.topology = topology
-		self.coordinator = coordinator
 		self.placements = []
 		self.measuredSystemOverload = float('inf')
-		self.placementRegistry = {}
+		self.placementRegistry = []
+		self.evaluationRegistry = []
 		
-		#self.monitor.registerSignal( "PLACEMENTS" )
-		#self.monitor.registerOutput( [ ("PLACEMENTS", SystemMonitor.fileCSVOutput, self.composePlacementsHeader) ] )
-	
-	def recordMeasuredSystemOverload(self, signalName, signalValue):
-		self.measuredSystemOverload = signalValue
-	
-	def recordPlacement(self, appName, dcName, overload):
-		self.placementRegistry[appName] = (dcName, overload)
+	def recordPlacement(self, appName, dcName, time):
+		self.placementRegistry.append( (time, appName, dcName) )
 		
-	def getPlacementHistory(self, appName):
-		if appName in self.placementRegistry:
-			return self.placementRegistry[appName]
-		else:
-			return (None, float('inf'))
-	
-	def addMeasurement(self, data):
-		self.placements.append(data)
-		
-	def getPlacementBuffer(self):
-		placementsBuffer = str()
-		
-		for placement in self.placements:
-			placementsBuffer += "%s \r" % placement
-			
-		self.placements = []
-		
-		return placementsBuffer
-	
-	# [DEPRECATED] What is this for?
-	def removeDC(self, AppDCList):
-		'''
-		removes the list of DCs from the table of the topology
-		'''
-		for (appName, dcName) in AppDCList:
-			dc = self.topology.getNode(dcName)
-			dc.terminateApp(appName)
-		self.topology.removeFromTable(AppDCList)
-	
-	# [DEPRECATED]  What is this for?
-	def addAppLeafNode(self, appNodeDict): 
-		"""
-		Descr : This function should be called when new app appears in the 
-				system
-		Input : app and the leaf node where the app should run   
-		Output: return 1 on success
-		"""
-		overload = self.getoverloadNodes(appNodeDict)
-		
-	def lookupDistH (self,nodeList,dist):
-		"""
-		Descr : compute all the neighbour for distance less than and equal to dist
-				
-		Input : distance dist, node list
-		
-		"""
-		newDict = {}
-		for n in nodeList: 
-			newDict[n] = self.lookupNeighbour(n,dist)
-			
-		return newDict    
-	
-	# [DEPRECATED] What is this for?
-	def generateSolutions(self, dist, numNodes): 
-		_masterList = []
-		baseList = [0]*numNodes 
-		#while dist <=0:
-		for i in range(dist):
-			baseList[i] = dist -i 
-			dist = dist -1
-		pass
+	def recordEvaluation(self, time, nodes):
+		self.evaluationRegistry.append( (time, nodes) )
 	
 	'''
-	######## Neighbourhood ########
+	######## Evaluation ########
 	'''
-	# [DEPRECATED] What is this for?
-	def exploreNeighbour(self, node, dist):
-		"""
-		compute all the possible neighbour at fixed distance h
-		"""
-		newDict = {node.getName():{'N_NODE':node,'EDGE':[]}}
-		d = 0
-		while d< dist: 
-			d = d+1
-			#print newDict
-			print "----------"
-			_temp1 = {}
-			for nodeAttributes in newDict.itervalues(): 
-				#print nodeAttributes
-				tempListTuples = nodeAttributes['N_NODE'].getPeersTouple()
-				_temp = {}
-				for (e,v) in tempListTuples:
-					_temp[v.getName()] = {'N_NODE':v,'EDGE':nodeAttributes['EDGE']+[e]}
-					#_temp[v.getName()] = {'N_NODE':v,'EDGE':[nodeAttributes['EDGE'],e]}
-				# to add the previous edges
-				_temp1  = dict(_temp.items() + _temp1.items())
-				newDict =  _temp1
-		if node.getName() in newDict:
-			del newDict[node.getName()]
-		print "---result---"
-		return newDict
-	
-	# [DEPRECATED] What is this for?
-	def lookupNeighbour(self, node, dist): 
-		"""
-		returns all the nodes along with edges (as tuple) at specific distance dist 
+	# Evalute if path can accomodate the placement option
+	def evaluateAppPlacementCost(self, appPlacement):
+		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
 		
-		"""
-		
-		newDict = {node.getName():{'N_NODE':node,'EDGE':[]}}
-		d = 0
-		while d<= dist: 
-			d = d+1
-			print "----------"
-			for nodeAttributes in newDict.itervalues(): 
-				#print nodeAttributes
-				tempListTuples = nodeAttributes['N_NODE'].getPeersTouple()
-				_temp = {}
-				for (e,v) in tempListTuples:
-					_temp[v.getName()] = {'N_NODE':v,'EDGE':nodeAttributes['EDGE']+[e]}
-				# to add the previous edges
-				_temp1  = dict(_temp.items() + newDict.items())
-				newDict =  _temp1
-		return newDict
-		
-	def findNeighbourGlobal(self,dictAppNode):
-		"""
-		Descr:  Compute the neighbours if possible, node and link
-		Input:  A dictionary with key as application and value as node on which
-				the application is running 
-		Output: dictionary, key: app, value: all the nodes corresponding to the 
-				node where the app is running  
-		"""
-		dictAppNeighbour = {}
-		for app,node in dictAppNode:
-			dictAppNeighbour[app] = node.getChildNodes().append(node.getParentNode())
-		return dictAppNeighbour
+		overloadFactor = 0
 
-	'''
-	######## Evaluations ########
-	'''
+		assert isinstance(entities, dict), "%s : entities is not a dict - %s" %(self.getName(), entities)
+
+		for entity in entities.itervalues():
+			entitiyOverload = entity['ENTITY'].evaluateAggregateCost(entity['USAGE'])
+			
+			overloadFactor += entitiyOverload
+		
+		return overloadFactor	
+	
 	# Compute total local resource usage for app in appNames and paths 
 	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, demand)
 		enteties = {}
@@ -177,23 +61,7 @@ class Scheduler(object):
 		
 		for entity in entities:
 			entity['FITS'] = entity['ENTITY'].willAppFit({appName: entity['USAGE']})
-		
-	# Evalute if path can accomodate the placement option
-	def evaluateAppPlacementOverload(self, appPlacement):
-		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
-		
-		overloadFactor = 0
-
-		for entity in entities.itervalues():
-			entitiyOverload = entity['ENTITY'].evaluateAggregateOverload(entity['USAGE'])
-			
-			overloadFactor += entitiyOverload
-		
-		return overloadFactor	
 	
-	def findNeighbourLocal(self,node): 
-		return node.getChildNodes().append(node.getParentNode())
-		
 	def getoverloadNodes(self,dictAppNode):
 		"""
 		Descr : compute the overload of the nodes where the application is 
@@ -260,7 +128,26 @@ class Scheduler(object):
 		possiblePlacementDict = self.evaluateNeighbour(appToBeEvaluated)
 		return possiblePlacementDict
 		
+	def output(self, fileName):
+		assert signalName in self.signals , "%s is not a recorded signal" % signalName
+		
+		path = "results"
+		
+		if not os.path.exists(path):
+			os.mkdir(path)
+		
+		path += "/%s" % self.outputFolder
+		
+		if not os.path.exists(path):
+			os.mkdir(path)
+		
+		fileCSV = open('%/%s%s'%(path,'.csv'),'w')
+		writePlacementToFile
 	
-	# Notify scheduler of a change in the network
-	def notifyScheduler(self): # this needs to contain more inotmation about the change, but for now, it is enough that we send a trigger now.
-		pass
+	def writePlacementToFile(self, fileName)
+		fileCSV.write("%s%s%s%s%s\r" % ('Time', ',', 'App', ',', 'DC') )
+		
+		for (time, appName, dcName) in self.placementRegistry:
+			fileCSV.write("%i%s%s%s%s\r" % (time, ',', appName, ',', dcName) )
+		
+		fileCSV.close()

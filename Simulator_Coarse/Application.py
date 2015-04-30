@@ -7,6 +7,7 @@ class LinearAppResrFunc(object):
 		
 	def computeResourceUsage(self, demand):
 		# linear function
+		assert isinstance(demand, float) or isinstance(demand, int), "%s : Demand is not a number - %s" % demand
 		return self.a+self.b*demand
 
 class ExpAppResrFunc(object):

@@ -49,9 +49,6 @@ class SystemMonitor(object):
 	'''
 	Measurements
 	'''
-	def getPlacementBuffer(self):
-		return self.scheduler.getPlacementBuffer()
-
 	def measureComponentResourceUtilisation(self): 
 		componentResourceUtilization = ''
 		
@@ -84,7 +81,7 @@ class SystemMonitor(object):
 		componentOverloadFactor = ''
 
 		for entity in (self.topology.getAllDCs() + self.topology.getAllLinks()):
-			componentOverloadFactor += "%f%s" % (entity.getOverloadFactor(), self.separator)
+			componentOverloadFactor += "%f%s" % (entity.getCurrentCost(), self.separator)
 
 		return componentOverloadFactor
 
@@ -92,35 +89,9 @@ class SystemMonitor(object):
 		result = 0
 
 		for entity in (self.topology.getAllLinks() + self.topology.getAllDCs()):
-			result += entity.getOverloadFactor()
+			result += entity.getCurrentCost()
 
 		return result
-
-	def measureApplicationLatency(self):
-		leafs = self.topology.getAllLeafs()
-
-		latencies = {}
-
-		for leafNode in leafs:
-			leafNodeName = leafNode.getName()
-
-			for appName in leafNode.getAppList():
-				if appName not in latencies:
-					latencies[appName] = []
-				
-				dcName = self.coordinator.getAppPlacement(appName)
-				
-				path = self.topology.getPath(appName, leafNodeName, dcName)
-				
-				latency = 0
-				
-				for entity in path:
-					latency += entity.getLatency('NET_DOWN')
-					
-				latencies[appName].append(latency)
-		
-		return latencies
-				
 	
 	# [DEPRICATED]
 	def measureSystemBadness(self):

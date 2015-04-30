@@ -8,6 +8,8 @@ class Monitor(object):
 		self.measrPoints = measrPoints #Meas points are functions from other objects that you call to retreive the data.
 		self.interval = interval
 		
+		assert isinstance(self.measrPoints, dict), "%s : measrPoints is not a dict - %s" %(self.getName(), self.measrPoints)
+		
 		for measrPoint in self.measrPoints.itervalues():
 			measrPoint['DATA'] = {}
 		
