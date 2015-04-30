@@ -127,27 +127,3 @@ class Scheduler(object):
 				node.resource = node.resource + app.resource
 		possiblePlacementDict = self.evaluateNeighbour(appToBeEvaluated)
 		return possiblePlacementDict
-		
-	def output(self, fileName):
-		assert signalName in self.signals , "%s is not a recorded signal" % signalName
-		
-		path = "results"
-		
-		if not os.path.exists(path):
-			os.mkdir(path)
-		
-		path += "/%s" % self.outputFolder
-		
-		if not os.path.exists(path):
-			os.mkdir(path)
-		
-		fileCSV = open('%/%s%s'%(path,'.csv'),'w')
-		writePlacementToFile
-	
-	def writePlacementToFile(self, fileName)
-		fileCSV.write("%s%s%s%s%s\r" % ('Time', ',', 'App', ',', 'DC') )
-		
-		for (time, appName, dcName) in self.placementRegistry:
-			fileCSV.write("%i%s%s%s%s\r" % (time, ',', appName, ',', dcName) )
-		
-		fileCSV.close()
