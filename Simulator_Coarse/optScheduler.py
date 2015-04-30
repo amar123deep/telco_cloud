@@ -71,6 +71,8 @@ class optScheduler(Scheduler):
 		print "Evaluation took : %i ms" % (t_end-t_start)
 		logging.debug("Evaluation took : %i ms" % (t_end-t_start))
 		
+		self.recordEvaluation(t_end-t_start, nbrApps)
+		
 
 	def getPackagedPath(self, appsNotScheduled, appDCs):
 		result = []

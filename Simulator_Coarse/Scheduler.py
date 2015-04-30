@@ -1,4 +1,5 @@
 import simpy
+import os
 from Datacentre import Datacentre
 from Link import Link
 
@@ -128,11 +129,8 @@ class Scheduler(object):
 		possiblePlacementDict = self.evaluateNeighbour(appToBeEvaluated)
 		return possiblePlacementDict
 
-		
 	def output(self, outputFolder):
 		outputs = [self.writePlacementToFile, self.writeEvaluationsToFile]
-		
-		assert signalName in self.signals , "%s is not a recorded signal" % signalName
 		
 		path = "results"
 		
@@ -144,10 +142,11 @@ class Scheduler(object):
 		if not os.path.exists(path):
 			os.mkdir(path)
 		
-		file = open('%/%s%s'%(path,'.csv'),'w')
-		writePlacementToFile
+		for output in outputs:
+			output(path)
 	
-	def writePlacementToFile(self, file)
+	def writePlacementToFile(self, filePath):
+		file = open('%s/%s%s'%(filePath,'PLACEMENTS','.csv'),'w')
 		file.write("%s%s%s%s%s\r" % ('Time', ',', 'App', ',', 'DC') )
 		
 		for (time, appName, dcName) in self.placementRegistry:
@@ -155,10 +154,11 @@ class Scheduler(object):
 		
 		file.close()
 
-	def writeEvaluationsToFile(self, file )
-		file.write("%s%s%s%s%s\r" % ('Time', ',', 'App', ',', 'DC') )
+	def writeEvaluationsToFile(self, filePath):
+		file = open('%s/%s%s'%(filePath,'EVALUATIONS','.csv'),'w')
+		file.write("%s%s%s\r" % ('Time', ',', 'Nbr nodes') )
 		
-		for (time, appName, dcName) in self.placementRegistry:
-			file.write("%i%s%s%s%s\r" % (time, ',', appName, ',', dcName) )
+		for (time, nodes) in self.evaluationRegistry:
+			file.write("%i%s%s\r" % (time, ',', nodes) )
 		
 		file.close()

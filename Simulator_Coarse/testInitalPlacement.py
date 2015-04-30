@@ -21,6 +21,7 @@ from Controller import PeriodicController
 
 def main():
 	workloadName = "workload_v1_6_a10_case5"
+	#workloadName = "workfile_tripple_production"
 	nbrApps = 15
 
 	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
@@ -57,7 +58,7 @@ def main():
 	
 
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, workloadName+'_continous_2', topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, workloadName+'_continous_1', topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
@@ -72,7 +73,7 @@ def main():
 	env.process(monitor.measure())
 	
 	logging.info("Contorller started")
-	controller = PeriodicController(env, coordinator, 2, 0.1)
+	controller = PeriodicController(env, coordinator, 1, 0.1)
 	
 	logging.info("Simulation started")
 	env.run(until=workload.getWorkloadTimeSpan())
@@ -82,9 +83,10 @@ def main():
 	logging.info("Composing results")
 	
 	monitor.produceOutput()
-	#scheduler.output( "PLACEMENT" )
+	scheduler.output(workloadName+'_continous_2')
 	
 	print "DONE"
 	
 if __name__ == '__main__':
 	main()
+	
