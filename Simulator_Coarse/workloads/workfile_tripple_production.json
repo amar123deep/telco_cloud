@@ -1,0 +1,70 @@
+{
+  "0": {
+    "A0": {
+      "0": {"PRODUCTION": 1}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 0},
+    },
+    "A1": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 1}, 
+      "2": {"PRODUCTION": 0},
+    },
+    "A2": {
+      "0": {"PRODUCTION": 1}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 0},
+    }
+  }, 
+  "1": {
+    "A0": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 1}, 
+      "2": {"PRODUCTION": 0},
+    },
+    "A1": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 1},
+    },
+    "A2": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 1}, 
+      "2": {"PRODUCTION": 0},
+    }
+  }, 
+  "2": {
+    "A0": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 1},
+    },
+    "A1": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 1},
+    },
+    "A2": {
+      "0": {"PRODUCTION": 1}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 0},
+    }
+  }, 
+  "3": {
+    "A0": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 0}, 
+      "2": {"PRODUCTION": 0},
+    },
+    "A1": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 1}, 
+      "2": {"PRODUCTION": 0},
+    },
+    "A2": {
+      "0": {"PRODUCTION": 0}, 
+      "1": {"PRODUCTION": 1}, 
+      "2": {"PRODUCTION": 0},
+    }
+  }
+}
