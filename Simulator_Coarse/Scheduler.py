@@ -127,3 +127,4 @@ class Scheduler(object):
 				node.resource = node.resource + app.resource
 		possiblePlacementDict = self.evaluateNeighbour(appToBeEvaluated)
 		return possiblePlacementDict
+

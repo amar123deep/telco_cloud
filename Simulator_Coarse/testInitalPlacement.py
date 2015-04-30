@@ -4,7 +4,6 @@ This file is to check InitialPlacement
 import simpy
 import time
 import logging
-import Filters
 import random
 
 from Resource import Resource 
