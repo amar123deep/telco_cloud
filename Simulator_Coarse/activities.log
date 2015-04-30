@@ -1,6 +1,6 @@
-INFO:root:---- 30/04/2015 - 14:36:22 ----
+INFO:root:---- 30/04/2015 - 17:27:55 ----
 INFO:root:Topology generated, with 4 datacentres
-INFO:root:optScheduler scheduler created
+INFO:root:optScheduler_threaded scheduler created
 INFO:root:Contorller started
 INFO:root:Simulation started
 DEBUG:root:----- [time = 0] -----
@@ -21,6 +21,7 @@ DEBUG:root:Coordinator - Evaluating A0
 DEBUG:root:Coordinator - Evaluating A2
 DEBUG:root:Coordinator - apps need to be removed: []
 DEBUG:root:Coordinator - apps needs to be scheduled : [] 
+DEBUG:root:Evaluation took : 0 ms
 DEBUG:root:----- [time = 2] -----
 DEBUG:root: Start workload processing
 DEBUG:root:Coordinator - Evaluating A1
@@ -36,5 +37,6 @@ DEBUG:root:Coordinator - Evaluating A0
 DEBUG:root:Coordinator - Evaluating A2
 DEBUG:root:Coordinator - apps need to be removed: []
 DEBUG:root:Coordinator - apps needs to be scheduled : [] 
+DEBUG:root:Evaluation took : 0 ms
 INFO:root:Simulation Done
 INFO:root:Composing results

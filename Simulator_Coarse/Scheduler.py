@@ -1,6 +1,7 @@
 import simpy
 import os
 from Datacentre import Datacentre
+from multiprocessing import Process, Queue
 from Link import Link
 
 class Scheduler(object):
@@ -41,6 +42,21 @@ class Scheduler(object):
 			overloadFactor += entitiyOverload
 		
 		return overloadFactor	
+	
+	# Evalute if path can accomodate the placement option (threaded)
+	def evaluateAppPlacementCost_threaded(self, index, appPlacement, queue):
+		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
+		
+		overloadFactor = 0
+
+		assert isinstance(entities, dict), "%s : entities is not a dict - %s" %(self.getName(), entities)
+
+		for entity in entities.itervalues():
+			entitiyOverload = entity['ENTITY'].evaluateAggregateCost(entity['USAGE'])
+			
+			overloadFactor += entitiyOverload
+		
+		queue.put((index, overloadFactor))	
 	
 	# Compute total local resource usage for app in appNames and paths 
 	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, demand)

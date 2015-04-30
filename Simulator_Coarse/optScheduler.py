@@ -6,6 +6,7 @@ import math
 import time
 import logging
 import collections
+from multiprocessing import Pool
 from Datacentre import Datacentre
 from Link import Link
 from Scheduler import Scheduler
@@ -35,6 +36,8 @@ class optScheduler(Scheduler):
 		
 		nbrApps = len(appNames)
 		assert len(appNeighborhoods) == nbrApps, "Number of neighborhoods is the same as the number of apps."
+		
+		pool = Pool(processes=4) 
 		
 		for constellation in self.getConstellation(appNeighborhoods):
 			assert len(constellation) == nbrApps, "Not all apps (%i) accounted for in constellation (%i) : %s" % (nbrApps, len(constellation), constellation)

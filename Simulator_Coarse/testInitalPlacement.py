@@ -9,6 +9,7 @@ import random
 from Resource import Resource 
 from Scheduler import Scheduler 
 from optScheduler import optScheduler 
+from optScheduler_threaded import optScheduler_threaded
 from TopologyMaker import TopologyMaker
 from SystemMonitor import SystemMonitor
 from Workload import Workload
@@ -49,16 +50,13 @@ def main():
 	topology = Topology(env, datacentres, links, leafnodes)
 	
 
-	scheduler = optScheduler(env, topology)
+	scheduler = optScheduler_threaded(env, topology)
 	logging.info('%s scheduler created' % type(scheduler).__name__)
-	
-
 		
 	coordinator = Coordinator(env, topology, scheduler)
 	
-
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, workloadName+'_continous_1', topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, workloadName+'_static', topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
