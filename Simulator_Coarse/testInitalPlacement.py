@@ -20,7 +20,7 @@ from Topology import Topology
 from Controller import PeriodicController
 
 def main():
-	workloadName = "workload_v1_6_a10_case5"
+	workloadName = "workload_v1_6_a5_case5"
 	#workloadName = "workfile_tripple_production"
 	nbrApps = 15
 
