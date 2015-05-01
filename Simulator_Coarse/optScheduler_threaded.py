@@ -18,7 +18,7 @@ class optScheduler_threaded(Scheduler):
 	
 	def __init__(self, env, topology):
 		Scheduler.__init__(self, env, topology)
-		self.max_thread_count = 4
+		self.max_thread_count = 8
 		self.nbr_cpu = multiprocessing.cpu_count()
 		print "System has %i cores" % self.nbr_cpu
 		
@@ -33,11 +33,6 @@ class optScheduler_threaded(Scheduler):
 			for thread in threads:
 				if thread.isAlive():
 					count +=1
-				else:
-					del thread
-			
-			print "%i threads running, %i cores available" % (count, self.nbr_cpu)
-			
 			return count
 		
 		t_start = time.time()
@@ -65,8 +60,8 @@ class optScheduler_threaded(Scheduler):
 			# Calculate cost for each constellation
 			t = threading.Thread(target=self.evaluateAppPlacementCost_threaded, args=(i, appsNotScheduled, constellation, resultQueue))
 			
-			while threadCount(threads) > self.max_thread_count:
-				time.sleep(10)
+			while threadCount(threads) >= self.max_thread_count:
+				time.sleep(2)
 			
 			t.start()
 			threads.append(t)
