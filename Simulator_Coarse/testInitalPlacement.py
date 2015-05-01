@@ -24,7 +24,7 @@ from Controller import PeriodicController
 def main():
 	workloadName = "workload_v1_6_a10_game1may"
 	#workloadName = "workfile_tripple_production"
-	nbrApps = 15
+	nbrApps = 10
 	depth = 2
 
 	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
@@ -32,7 +32,7 @@ def main():
 	
 	applications = {}
 	applicationTypes = Application.TYPES.keys()
-	for i in range(0, nbrApps-1):
+	for i in range(0, nbrApps):
 		applications.update({'A%i'%i : Application('A%i'%i, Application.TYPES[random.choice(applicationTypes)])})
 
 	env = simpy.Environment()
@@ -51,13 +51,13 @@ def main():
 	
 	topology = Topology(env, datacentres, links, leafnodes)
 	
-	scheduler = optScheduler_threaded(env, topology)
+	scheduler = optScheduler(env, topology)
 	logging.info('%s scheduler created' % type(scheduler).__name__)
 	
 	coordinator = Coordinator(env, topology, scheduler, depth)
 	
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, workloadName+'_continous_1', topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, workloadName+'_continous', topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),

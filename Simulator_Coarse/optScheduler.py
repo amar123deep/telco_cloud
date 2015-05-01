@@ -71,7 +71,7 @@ class optScheduler(Scheduler):
 				yield (appNames[i], constellations[minIndex][i])
 		
 		t_end = time.time()
-		print "Evaluation took : %i ms" % (t_end-t_start)
+		print "Evaluation took : %i ms with min: %f, current: %f " % (t_end-t_start, proposedCost, currentCost)
 		logging.debug("Evaluation took : %i ms" % (t_end-t_start))
 		
 		self.recordEvaluation(t_end-t_start, nbrApps)

@@ -55,8 +55,12 @@ class Scheduler(object):
 
 		for entity in entities.itervalues():
 			entitiyOverload = entity['ENTITY'].evaluateAggregateCost(entity['USAGE'])
-			
+			if entitiyOverload == float('inf'):
+				overloadFactor = entitiyOverload
+				break
 			overloadFactor += entitiyOverload
+		
+		print "\t %f" % overloadFactor
 		
 		queue.put((index, overloadFactor))	
 	

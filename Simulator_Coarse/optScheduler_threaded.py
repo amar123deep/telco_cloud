@@ -60,7 +60,7 @@ class optScheduler_threaded(Scheduler):
 			t = threading.Thread(target=self.evaluateAppPlacementCost_threaded, args=(i, appsNotScheduled, constellation, resultQueue))
 
 			while threadCount(threads) >= self.max_thread_count:
-				time.sleep(2)
+				pass
 
 			t.start()
 			threads.append(t)

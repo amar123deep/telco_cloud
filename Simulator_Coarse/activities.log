@@ -1,6 +1,6 @@
-INFO:root:---- 01/05/2015 - 15:07:29 ----
+INFO:root:---- 01/05/2015 - 19:21:45 ----
 INFO:root:Topology generated, with 10 datacentres
-INFO:root:optScheduler_threaded scheduler created
+INFO:root:optScheduler scheduler created
 INFO:root:Controller started
 INFO:root:Simulation started
 DEBUG:root:----- [time = 0] -----
