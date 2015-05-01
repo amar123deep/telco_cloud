@@ -17,3 +17,303 @@ DEBUG:root:Coordinator - Evaluating A4
 DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
 DEBUG:root:Coordinator - apps need to be removed: []
 DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 24 ms
+DEBUG:root:----- [time = 1] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 31 ms
+DEBUG:root:----- [time = 2] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 9 ms
+DEBUG:root:----- [time = 3] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 20 ms
+DEBUG:root:----- [time = 4] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 22 ms
+DEBUG:root:----- [time = 5] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 15 ms
+DEBUG:root:----- [time = 6] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 24 ms
+DEBUG:root:----- [time = 7] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 33 ms
+DEBUG:root:----- [time = 8] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 10 ms
+DEBUG:root:----- [time = 9] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 6 ms
+DEBUG:root:----- [time = 10] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 9 ms
+DEBUG:root:----- [time = 11] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 36 ms
+DEBUG:root:----- [time = 12] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 93 ms
+DEBUG:root:----- [time = 13] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 15 ms
+DEBUG:root:----- [time = 14] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 10 ms
+DEBUG:root:----- [time = 15] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 22 ms
+DEBUG:root:----- [time = 16] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 17 ms
+DEBUG:root:----- [time = 17] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 30 ms
+DEBUG:root:----- [time = 18] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 14 ms
+DEBUG:root:----- [time = 19] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Evaluation took : 14 ms
+DEBUG:root:----- [time = 20] -----
+DEBUG:root:Start workload processing
+DEBUG:root:Coordinator - Evaluating A1
+DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
+DEBUG:root:Coordinator - Evaluating A0
+DEBUG:root:Coordinator - A0 is NOT running : Net runnings apps ['A1', 'A0']
+DEBUG:root:Coordinator - Evaluating A3
+DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
+DEBUG:root:Coordinator - Evaluating A2
+DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A4
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - apps need to be removed: []
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
