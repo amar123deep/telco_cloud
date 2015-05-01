@@ -34,6 +34,9 @@ class optScheduler_threaded(Scheduler):
 					count +=1
 				else:
 					del thread
+			
+			print "%i threads running, %i cores available" % (count, self.nbr_cpu)
+			
 			return count
 		
 		t_start = time.time()
