@@ -6,43 +6,39 @@ import math
 import time
 import logging
 import collections
-import threading
-
 import multiprocessing
-from multiprocessing import Process, Queue
+import copy_reg
+import types
+
+from functools import partial
+from threading import Thread
 from Datacentre import Datacentre
 from Link import Link
 from Scheduler import Scheduler
 
-class optScheduler_threaded(Scheduler):
+class optScheduler_thread_pooled(Scheduler):
 	
 	def __init__(self, env, topology):
 		Scheduler.__init__(self, env, topology)
 		self.nbr_cpu = multiprocessing.cpu_count()
 		print "System has %i cores" % self.nbr_cpu
-		
+	
 	'''
 		Descr : A generator function that does the initial placement
 		Input : dictionay where key is appname and value if tuples of nodeuser
 				and list of DCs where the app is to be scheduled
 	'''
 	def fnSchedule(self, appsNotScheduled, appPlacementRegistry):
-		def threadCount(threads):
-			count = 0
-			for thread in threads:
-				if thread.isAlive():
-					count +=1
-				else:
-					del thread
-			return count
+		def evaluateAppPlacementCost(appsNotScheduled, constellation):
+			return self.evaluateAppPlacementCost_threaded(appsNotScheduled, constellation)
 		
 		t_start = time.time()
-		
+
 		appNeighborhoods = []
 		appNames = []
 		constellations = []
 		constellationCosts = []
-		
+
 		for appName in sorted(appsNotScheduled):
 			(appDemand, neighborhood) = appsNotScheduled[appName]
 			appNeighborhoods.append(neighborhood)
@@ -51,32 +47,25 @@ class optScheduler_threaded(Scheduler):
 		nbrApps = len(appNames)
 		assert len(appNeighborhoods) == nbrApps, "Number of neighborhoods is the same as the number of apps."
 		
-		resultQueue = multiprocessing.Queue()
-		threads = []
-		
-		i = 0
-		for constellation in self.getConstellation(appNeighborhoods):
-			#assert len(constellation) == nbrApps, "Not all apps (%i) accounted for in constellation (%i) : %s" % (nbrApps, len(constellation), constellation)
+		# Prepare threads
+		copy_reg.pickle(types.MethodType, evaluateAppPlacementCost)
+		pool = multiprocessing.Pool(processes=self.nbr_cpu)
+		results = []
 
-			# Calculate cost for each constellation
-			t = threading.Thread(target=self.evaluateAppPlacementCost_threaded, args=(i, appsNotScheduled, constellation, resultQueue))
-			
-			while threadCount(threads) > self.nbr_cpu:
-				time.sleep(10)
-			
-			t.start()
-			threads.append(t)
+		for constellation in self.getConstellation(appNeighborhoods):
+			assert len(constellation) == nbrApps, "Not all apps (%i) accounted for in constellation (%i) : %s" % (nbrApps, len(constellation), constellation)
+
+			# start new thread
+			func = partial(evaluateAppPlacementCost, appsNotScheduled, constellation)
+			results.append( pool.apply_async(func))
 			# Save constellation
 			constellations.append( constellation )
-			i += 1
 
-		for t in threads:
-			t.join()
-		
-		temp_result = [resultQueue.get() for _ in xrange(len(constellations))]
-		
-		for (index, cost) in temp_result:
-			constellationCosts.insert(index, cost)
+		print "%i jobs submitted to pool of %i threads" % (len(results), self.nbr_cpu)
+
+		# Wait for all threads are done and extract results
+		for result in results:
+			print result.get()
 
 		# Find constellation with min cost
 		minIndex = constellationCosts.index(min(constellationCosts))
@@ -106,6 +95,7 @@ class optScheduler_threaded(Scheduler):
 		
 		self.recordEvaluation(t_end-t_start, nbrApps)
 		
+
 	def getPackagedPath(self, appsNotScheduled, appDCs):
 		result = []
 		appNames = sorted(appsNotScheduled)
