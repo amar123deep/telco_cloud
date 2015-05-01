@@ -22,9 +22,9 @@ from Topology import Topology
 from Controller import PeriodicController
 
 def main():
-	workloadName = "workload_v1_6_a10_game1may"
+	workloadName = "workload_v1_6_a5mini_1may"
 	#workloadName = "workfile_tripple_production"
-	nbrApps = 10
+	nbrApps = 5
 	depth = 2
 
 	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
