@@ -23,8 +23,8 @@ from Controller import PeriodicController
 
 
 def main():
-	#workloadName = "workload_v1_6_a5_case5"
-	workloadName = "workfile_tripple_production"
+	workloadName = "workload_v1_6_a5_case5"
+	#workloadName = "workfile_tripple_production"
 	nbrApps = 15
 
 	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
@@ -39,7 +39,7 @@ def main():
 
 	topologyMaker = TopologyMaker(env, None, applications)
 
-	datacentres, links, leafnodes = topologyMaker.GenerateTreeFromParameters(	childStruct 	= [3,1], 
+	datacentres, links, leafnodes = topologyMaker.GenerateTreeFromParameters(	childStruct 	= [3,2,1], 
 																				sizeStruct 		= [	Datacentre.RESOURCE_TYPES['L'],
 																									Datacentre.RESOURCE_TYPES['M'],
 																									Datacentre.RESOURCE_TYPES['S'] ], 
@@ -57,31 +57,31 @@ def main():
 	coordinator = Coordinator(env, topology, scheduler)
 	
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	#monitor = SystemMonitor(env, 1, workloadName+'_static', topology, coordinator, scheduler, 	
-	#														[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
-	#															("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
-	#															("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
-	#														], 
-	#														[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
-	#															("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
-	#															("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),],
-	#														[])
+	monitor = SystemMonitor(env, 1, workloadName+'_static', topology, coordinator, scheduler, 	
+															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
+																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
+																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
+															], 
+															[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
+																("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
+																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),],
+															[])
 	
-	workload.produceWorkload()
-	#env.process(workload.produceWorkload())
-	#env.process(monitor.measure())
+	#workload.produceWorkload()
+	env.process(workload.produceWorkload())
+	env.process(monitor.measure())
 	
-	#logging.info("Contorller started")
-	#controller = PeriodicController(env, coordinator, 1, 0.1)
+	logging.info("Contorller started")
+	controller = PeriodicController(env, coordinator, 1, 0.1)
 	
-	#logging.info("Simulation started")
-	#env.run(until=workload.getWorkloadTimeSpan())
+	logging.info("Simulation started")
+	env.run(until=workload.getWorkloadTimeSpan())
 	logging.info("Simulation Done")
 	
-	#monitor.compose()
-	#logging.info("Composing results")
+	monitor.compose()
+	logging.info("Composing results")
 	
-	#monitor.produceOutput()
+	monitor.produceOutput()
 	scheduler.output(workloadName+'_continous_2')
 	
 	print "DONE"
