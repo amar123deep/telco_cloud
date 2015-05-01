@@ -5,10 +5,12 @@ class Coordinator(object):
 	'''
 	Descr : coordinates workload changes
 	'''
-	def __init__(self, env, topology, scheduler):
+	def __init__(self, env, topology, scheduler, depth):
 		self.env = env
 		self.topology = topology
 		self.scheduler = scheduler
+		self.depth = depth
+		
 		self.registry = {}
 
 		#env.process(self.clearResources())
@@ -22,7 +24,7 @@ class Coordinator(object):
 		for leaf in self.topology.getAllLeafs():
 			for appName, demandDict in leaf.getAppDemand().iteritems():
 				assert isinstance(demandDict, dict), "%s : demandDict is not a dict - %s" %(self.getName(), demandDict)
-				appsNeedTobeReevaluated[appName] = (demandDict, self.topology.getAllDCsName())
+				appsNeedTobeReevaluated[appName] = (demandDict, self.topology.findNeighbours(self.registry[appName], self.depth))
 		
 		if len(appsNeedTobeReevaluated) > 0:
 			self.callScheduler(appsNeedTobeReevaluated)
@@ -56,25 +58,26 @@ class Coordinator(object):
 			path = self.topology.getPath(appName, leafName, dcName)
 			for entity in path:
 				entity.updateDemand(appName, leafName, leafDemand)
-	
+
 	def processWorkload(self,appWorkload):
 		'''
 		This function receives workload from each time stamp from the workload generator,
 		appWorkload has structure: {App:{node:user}}
 		'''
-		logging.debug(' Start workload processing')
-		
+		logging.debug('Start workload processing')
+
 		# All apps from workload at current time instant 
 		currentAPPlist = appWorkload.keys()
 		# we store apps that's need to be scheduled and are absent in the registry
 		appsWorkloadNotScheduled = {}
 		for appName, nodeUser in appWorkload.iteritems():  # appName , {leaf: nbrUsers}  
 			logging.debug('%s - Evaluating %s' % (type(self).__name__, appName))
-			
+
 			if appName not in self.registry: # registry contains 
-				appsWorkloadNotScheduled[appName] = (nodeUser,self.topology.getAllDCsName()) 
+				#appsWorkloadNotScheduled[appName] = (nodeUser, self.topology.getAllDCsName()) 
+				appsWorkloadNotScheduled[appName] = (nodeUser, self.topology.findNeighbours(self.topology.getRandomDCName(), self.depth))
 				logging.debug('%s - %s is NOT running : Net runnings apps %s' % (type(self).__name__, appName, str(appsWorkloadNotScheduled.keys())))
-		
+
 		removeAppDClist = []
 		for appName, dcName in self.registry.iteritems():
 			if appName not in currentAPPlist:
@@ -82,10 +85,10 @@ class Coordinator(object):
 				removeAppDClist.append((appName,dcName))
 				# ask scheduler to remove also from the topology table
 		logging.debug('%s - apps need to be removed: %s' % (type(self).__name__, str(removeAppDClist)))
-		
+
 		for (appName,dcName) in removeAppDClist: 
 			del self.registry[appName]
-	
+
 		logging.debug('%s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsWorkloadNotScheduled.keys())))
 		if len(appsWorkloadNotScheduled) > 0:
 			self.callScheduler(appsWorkloadNotScheduled)
@@ -98,11 +101,10 @@ class Coordinator(object):
 						element.updateDemand(appName, leafNodeName, demand)
 			else: 
 				print "%s is not scheduled" % (appName)
-				
+
 	def callScheduler(self, appsWorkloadNotScheduled):
 		'''
 		This function calls the scheduler function
-		
 		'''
 		for appName, dcName in self.scheduler.fnSchedule(appsWorkloadNotScheduled, self.registry):
 			if dcName is not None:

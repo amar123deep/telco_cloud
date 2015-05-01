@@ -1,11 +1,13 @@
 import sys
+import random
+
 from Link import Link
 from Datacentre import Datacentre
+
 class Topology: 
 	'''
 	Descr : traversing, finding path between any two nodes 
 	'''
-	
 	def __init__(self, env, datacentres, links, leafs):
 		self.env = env
 		self.datacentres = datacentres
@@ -22,12 +24,16 @@ class Topology:
 			result.append(self.datacentres[dcName])
 		
 		return result
+		
 	def getAllDCsName(self):
 		result = []
 		
 		for dcName in sorted(self.datacentres, key=lambda x: str(x)):
 			result.append(dcName)
 		return result
+	
+	def getRandomDCName(self):
+		return random.choice(self.datacentres.keys())
 	
 	# Return all Links 
 	def getAllLinks(self):
@@ -134,7 +140,8 @@ class Topology:
 		assert min_path is not None, "Topology: No min path found"
 
 		return min_path
-	def lookupNeighbour(self, nodeName, dist): 
+		
+	def lookupNeighbour_old(self, nodeName, dist): 
 		"""
 		returns all the nodes along with edges (as tuple) at specific distance dist 
 		
@@ -157,6 +164,26 @@ class Topology:
 				_temp1  = dict(_temp.items() + newDict.items())
 				newDict =  _temp1
 		return newDict
+		
+	def findNeighbours(self, nodeName, depth): 
+		"""
+		returns all the nodes along with edges (as tuple) at specific distance dist 
+		
+		"""
+		def accumulateNeighbours(node, neighbours, depth, maxDepth):
+			neighbours.append(node.getName())
+			if depth < maxDepth:
+				for (link, neighbourNode) in node.getPeersTouple():
+					if isinstance(neighbourNode, Datacentre) and neighbourNode.getName() not in neighbours:
+						accumulateNeighbours(neighbourNode, neighbours, depth+1, maxDepth)
+		
+		neighbours = []
+		
+		accumulateNeighbours(self.getNode(nodeName), neighbours, 0, depth)
+		
+		assert len(neighbours)>0, "No neighbours!?"
+		
+		return neighbours
 		
 	def findAllNeighbour(self, nodeName,dist): 
 		'''

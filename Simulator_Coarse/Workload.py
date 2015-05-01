@@ -17,7 +17,7 @@ class Workload(object):
 		prev_time = self.env.now
 
 		for time in sorted(self.data_new, key=lambda x: int(x)): # Time progresses whenever there is a change
-			#yield self.env.timeout(int(time)-prev_time) # Needed in runtime
+			yield self.env.timeout(int(time)-prev_time) # Needed in runtime
 			logging.debug("----- [time = %s] -----" % time)
 			print "----- [time = %s] -----" % time
 

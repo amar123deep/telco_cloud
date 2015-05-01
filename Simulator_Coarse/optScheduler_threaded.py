@@ -48,7 +48,6 @@ class optScheduler_threaded(Scheduler):
 			appNames.append(appName)
 
 		nbrApps = len(appNames)
-		assert len(appNeighborhoods) == nbrApps, "Number of neighborhoods is the same as the number of apps."
 		
 		resultQueue = multiprocessing.Queue()
 		threads = []
@@ -59,21 +58,23 @@ class optScheduler_threaded(Scheduler):
 
 			# Calculate cost for each constellation
 			t = threading.Thread(target=self.evaluateAppPlacementCost_threaded, args=(i, appsNotScheduled, constellation, resultQueue))
-			
+
 			while threadCount(threads) >= self.max_thread_count:
 				time.sleep(2)
-			
+
 			t.start()
 			threads.append(t)
+			
 			# Save constellation
 			constellations.append( constellation )
+			
 			i += 1
 
 		for t in threads:
 			t.join()
-		
+
 		temp_result = [resultQueue.get() for _ in xrange(len(constellations))]
-		
+
 		for (index, cost) in temp_result:
 			constellationCosts.insert(index, cost)
 
@@ -100,7 +101,7 @@ class optScheduler_threaded(Scheduler):
 				yield (appNames[i], constellations[minIndex][i])
 		
 		t_end = time.time()
-		print "Evaluation took : %i ms" % (t_end-t_start)
+		print "Evaluation took : %i ms with min: %f, current: %f " % (t_end-t_start, proposedCost, currentCost)
 		logging.debug("Evaluation took : %i ms" % (t_end-t_start))
 		
 		self.recordEvaluation(t_end-t_start, nbrApps)

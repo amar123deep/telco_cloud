@@ -21,11 +21,11 @@ from Coordinator import Coordinator
 from Topology import Topology
 from Controller import PeriodicController
 
-
 def main():
-	workloadName = "workload_v1_6_a5_case5"
+	workloadName = "workload_v1_6_a10_game1may"
 	#workloadName = "workfile_tripple_production"
 	nbrApps = 15
+	depth = 2
 
 	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
 	logging.info("---- %s ----" % time.strftime("%d/%m/%Y - %H:%M:%S"))
@@ -39,7 +39,7 @@ def main():
 
 	topologyMaker = TopologyMaker(env, None, applications)
 
-	datacentres, links, leafnodes = topologyMaker.GenerateTreeFromParameters(	childStruct 	= [3,2,1], 
+	datacentres, links, leafnodes = topologyMaker.GenerateTreeFromParameters(	childStruct 	= [3, 2, 1], 
 																				sizeStruct 		= [	Datacentre.RESOURCE_TYPES['L'],
 																									Datacentre.RESOURCE_TYPES['M'],
 																									Datacentre.RESOURCE_TYPES['S'] ], 
@@ -50,14 +50,14 @@ def main():
 	logging.info('Topology generated, with %i datacentres' % len(datacentres))
 	
 	topology = Topology(env, datacentres, links, leafnodes)
-
+	
 	scheduler = optScheduler_threaded(env, topology)
 	logging.info('%s scheduler created' % type(scheduler).__name__)
-		
-	coordinator = Coordinator(env, topology, scheduler)
+	
+	coordinator = Coordinator(env, topology, scheduler, depth)
 	
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, workloadName+'_static', topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, workloadName+'_continous_1', topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
@@ -71,7 +71,7 @@ def main():
 	env.process(workload.produceWorkload())
 	env.process(monitor.measure())
 	
-	logging.info("Contorller started")
+	logging.info("Controller started")
 	controller = PeriodicController(env, coordinator, 1, 0.1)
 	
 	logging.info("Simulation started")

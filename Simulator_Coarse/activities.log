@@ -1,8 +1,10 @@
-INFO:root:---- 01/05/2015 - 10:31:02 ----
+INFO:root:---- 01/05/2015 - 15:07:29 ----
 INFO:root:Topology generated, with 10 datacentres
 INFO:root:optScheduler_threaded scheduler created
+INFO:root:Controller started
+INFO:root:Simulation started
 DEBUG:root:----- [time = 0] -----
-DEBUG:root: Start workload processing
+DEBUG:root:Start workload processing
 DEBUG:root:Coordinator - Evaluating A1
 DEBUG:root:Coordinator - A1 is NOT running : Net runnings apps ['A1']
 DEBUG:root:Coordinator - Evaluating A0
@@ -11,7 +13,17 @@ DEBUG:root:Coordinator - Evaluating A3
 DEBUG:root:Coordinator - A3 is NOT running : Net runnings apps ['A1', 'A0', 'A3']
 DEBUG:root:Coordinator - Evaluating A2
 DEBUG:root:Coordinator - A2 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2']
+DEBUG:root:Coordinator - Evaluating A5
+DEBUG:root:Coordinator - A5 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A5']
 DEBUG:root:Coordinator - Evaluating A4
-DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A4']
+DEBUG:root:Coordinator - A4 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A5', 'A4']
+DEBUG:root:Coordinator - Evaluating A7
+DEBUG:root:Coordinator - A7 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A5', 'A4', 'A7']
+DEBUG:root:Coordinator - Evaluating A6
+DEBUG:root:Coordinator - A6 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A5', 'A4', 'A7', 'A6']
+DEBUG:root:Coordinator - Evaluating A9
+DEBUG:root:Coordinator - A9 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A5', 'A4', 'A7', 'A6', 'A9']
+DEBUG:root:Coordinator - Evaluating A8
+DEBUG:root:Coordinator - A8 is NOT running : Net runnings apps ['A1', 'A0', 'A3', 'A2', 'A5', 'A4', 'A7', 'A6', 'A9', 'A8']
 DEBUG:root:Coordinator - apps need to be removed: []
-DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A4'] 
+DEBUG:root:Coordinator - apps needs to be scheduled : ['A1', 'A0', 'A3', 'A2', 'A5', 'A4', 'A7', 'A6', 'A9', 'A8'] 
