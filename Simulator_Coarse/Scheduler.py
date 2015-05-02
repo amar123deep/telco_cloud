@@ -51,8 +51,6 @@ class Scheduler(object):
 		
 		return overloadFactor	
 	
-	
-	
 	# Evalute if path can accomodate the placement option (threaded)
 	def evaluateAppPlacementCost_threaded(self, index, appsNotScheduled, constellation, queue):
 		appPlacement = appPlacement = self.getPackagedPath(appsNotScheduled, constellation)

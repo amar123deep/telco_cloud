@@ -27,7 +27,7 @@ def main():
 	nbrApps = 5
 	depth = 2
 
-	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
+	logging.basicConfig(filename='activities_static.log', level=logging.DEBUG, filemode='w')
 	logging.info("---- %s ----" % time.strftime("%d/%m/%Y - %H:%M:%S"))
 	
 	applications = {}
@@ -43,8 +43,8 @@ def main():
 																				sizeStruct 		= [	Datacentre.RESOURCE_TYPES['L'],
 																									Datacentre.RESOURCE_TYPES['M'],
 																									Datacentre.RESOURCE_TYPES['S'] ], 
-																				uplinkStruct 	= [10000,1000,1000], 
-																				downlinkStruct 	= [10000,1000,1000], 
+																				uplinkStruct 	= [100,100,100], 
+																				downlinkStruct 	= [100,100,100], 
 																				latencyStruct 	= [0,0,0] )
 																				
 	logging.info('Topology generated, with %i datacentres' % len(datacentres))
@@ -57,15 +57,14 @@ def main():
 	coordinator = Coordinator(env, topology, scheduler, depth)
 	
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, workloadName+'_continous', topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, workloadName+'_static', topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
-																#("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
-																#("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
+																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
+																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
 															], 
 															[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
-																#("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
-																#("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
-															],
+																("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
+																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),],
 															[])
 	
 	#workload.produceWorkload()
