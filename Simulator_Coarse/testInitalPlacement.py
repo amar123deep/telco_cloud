@@ -43,8 +43,8 @@ def main():
 																				sizeStruct 		= [	Datacentre.RESOURCE_TYPES['L'],
 																									Datacentre.RESOURCE_TYPES['M'],
 																									Datacentre.RESOURCE_TYPES['S'] ], 
-																				uplinkStruct 	= [100,100,100], 
-																				downlinkStruct 	= [100,100,100], 
+																				uplinkStruct 	= [10000,1000,1000], 
+																				downlinkStruct 	= [10000,1000,1000], 
 																				latencyStruct 	= [0,0,0] )
 																				
 	logging.info('Topology generated, with %i datacentres' % len(datacentres))
@@ -59,12 +59,13 @@ def main():
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
 	monitor = SystemMonitor(env, 1, workloadName+'_continous', topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
-																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
-																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
+																#("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
+																#("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
 															], 
 															[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
-																("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
-																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),],
+																#("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
+																#("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
+															],
 															[])
 	
 	#workload.produceWorkload()

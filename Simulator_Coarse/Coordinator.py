@@ -20,7 +20,7 @@ class Coordinator(object):
 		This function when called reevaluates the whole system
 		'''
 		appsNeedTobeReevaluated = {}
-		
+		logging.info("### Revaluating")
 		for leaf in self.topology.getAllLeafs():
 			for appName, demandDict in leaf.getAppDemand().iteritems():
 				assert isinstance(demandDict, dict), "%s : demandDict is not a dict - %s" %(self.getName(), demandDict)
@@ -64,19 +64,17 @@ class Coordinator(object):
 		This function receives workload from each time stamp from the workload generator,
 		appWorkload has structure: {App:{node:user}}
 		'''
-		logging.debug('Start workload processing')
+		logging.debug('### Start workload processing')
 
 		# All apps from workload at current time instant 
 		currentAPPlist = appWorkload.keys()
 		# we store apps that's need to be scheduled and are absent in the registry
 		appsWorkloadNotScheduled = {}
 		for appName, nodeUser in appWorkload.iteritems():  # appName , {leaf: nbrUsers}  
-			logging.debug('%s - Evaluating %s' % (type(self).__name__, appName))
 
 			if appName not in self.registry: # registry contains 
 				#appsWorkloadNotScheduled[appName] = (nodeUser, self.topology.getAllDCsName()) 
 				appsWorkloadNotScheduled[appName] = (nodeUser, self.topology.findNeighbours(self.topology.getRandomDCName(), self.depth))
-				logging.debug('%s - %s is NOT running : Net runnings apps %s' % (type(self).__name__, appName, str(appsWorkloadNotScheduled.keys())))
 
 		removeAppDClist = []
 		for appName, dcName in self.registry.iteritems():
@@ -84,12 +82,12 @@ class Coordinator(object):
 				# remove from the registry
 				removeAppDClist.append((appName,dcName))
 				# ask scheduler to remove also from the topology table
-		logging.debug('%s - apps need to be removed: %s' % (type(self).__name__, str(removeAppDClist)))
+		logging.info('\t %s - apps need to be removed: %s' % (type(self).__name__, str(removeAppDClist)))
 
 		for (appName,dcName) in removeAppDClist: 
 			del self.registry[appName]
 
-		logging.debug('%s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsWorkloadNotScheduled.keys())))
+		logging.info('\t %s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsWorkloadNotScheduled.keys())))
 		if len(appsWorkloadNotScheduled) > 0:
 			self.callScheduler(appsWorkloadNotScheduled)
 		for appName, nodeUser in appWorkload.iteritems():

@@ -6,7 +6,7 @@ import math
 import time
 import logging
 import collections
-from multiprocessing import Pool
+
 from Datacentre import Datacentre
 from Link import Link
 from Scheduler import Scheduler
@@ -37,21 +37,24 @@ class optScheduler(Scheduler):
 		nbrApps = len(appNames)
 		assert len(appNeighborhoods) == nbrApps, "Number of neighborhoods is the same as the number of apps."
 		
-		pool = Pool(processes=4) 
-		
 		for constellation in self.getConstellation(appNeighborhoods):
 			assert len(constellation) == nbrApps, "Not all apps (%i) accounted for in constellation (%i) : %s" % (nbrApps, len(constellation), constellation)
-
+	
+			logging.info("\t Permutation %s ->" % (constellation) )
+						
 			# Calculate cost for each constellation
 			constellationCosts.append( self.evaluateAppPlacementCost( self.getPackagedPath(appsNotScheduled, constellation) ) )
 			
 			# Save constellation
 			constellations.append( constellation )
+			
+			logging.info("\t\t ->  With cost : %f" % (constellationCosts[-1]) )
 		
 		# Find constellation with min cost
-		minIndex = constellationCosts.index(min(constellationCosts))
+		minIndex = constellationCosts.index( min(constellationCosts) )
 		proposedCost = constellationCosts[minIndex]
 
+		# If this is the first time
 		if appPlacementRegistry is None or len(appPlacementRegistry) != nbrApps:
 			currentCost = float('inf') 
 		else:
@@ -61,19 +64,23 @@ class optScheduler(Scheduler):
 
 		if proposedCost < currentCost:
 			print "NEW PLACEMENT: now: %f vs. before: %f ->" % (proposedCost, currentCost)
+			logging.info("NEW PLACEMENT: now: %f vs. before: %f ->" % (proposedCost, currentCost))
 			for i in range(0, nbrApps):
 				if appNames[i] not in appPlacementRegistry:
 					prevDC = None
 				else:
 					prevDC = appPlacementRegistry[appNames[i]]
-				print "%s: %s -> %s" % (appNames[i], prevDC, constellations[minIndex][i] )
+
 				self.recordPlacement( appNames[i], constellations[minIndex][i], self.env.now )
+				
+				print "%s: %s -> %s" % (appNames[i], prevDC, constellations[minIndex][i] )
+				logging.info("%s: %s -> %s" % (appNames[i], prevDC, constellations[minIndex][i] ))
+				
 				yield (appNames[i], constellations[minIndex][i])
 		
 		t_end = time.time()
 		print "Evaluation took : %i ms with min: %f, current: %f " % (t_end-t_start, proposedCost, currentCost)
-		logging.debug("Evaluation took : %i ms" % (t_end-t_start))
-		
+		logging.info("Evaluation took : %i ms with min: %f, current: %f " % (t_end-t_start, proposedCost, currentCost))
 		self.recordEvaluation(t_end-t_start, nbrApps)
 		
 

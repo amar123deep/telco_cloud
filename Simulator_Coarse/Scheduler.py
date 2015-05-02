@@ -1,6 +1,8 @@
 import simpy
 import os
 import copy_reg
+import logging
+
 from Datacentre import Datacentre
 from multiprocessing import Process, Queue
 from Link import Link
@@ -25,7 +27,7 @@ class Scheduler(object):
 		
 	def recordEvaluation(self, time, nodes):
 		self.evaluationRegistry.append( (time, nodes) )
-	
+		
 	'''
 	######## Evaluation ########
 	'''
@@ -54,7 +56,10 @@ class Scheduler(object):
 		assert isinstance(entities, dict), "%s : entities is not a dict - %s" %(self.getName(), entities)
 
 		for entity in entities.itervalues():
+			logging.info("\t\t %s - Usage %f" % ( entity['ENTITY'].getName(), entity['USAGE']) )
+			
 			entitiyOverload = entity['ENTITY'].evaluateAggregateCost(entity['USAGE'])
+			
 			if entitiyOverload == float('inf'):
 				overloadFactor = entitiyOverload
 				break
