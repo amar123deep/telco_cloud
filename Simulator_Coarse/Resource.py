@@ -150,7 +150,7 @@ class Resource(object):
 
 	# [Asbstract] Update resource usage
 	def computeResourceUsage(self):
-		logging.info("\t %s - App resource utilisation:" % self.getName() )
+		#logging.info("\t %s - App resource utilisation:" % self.getName() )
 		for resourceName, resource in self.resources.iteritems(): # Calculate app usage for each resource usage each application's properties
 			resource['APPS'] = {}
 			for appName, appDemand in self.appDemands.iteritems(): # For every app
@@ -158,7 +158,7 @@ class Resource(object):
 				for demandType, demand in appDemand['TOTAL'].iteritems():
 					resource['APPS'][appName] += self.applications[appName].computeResourceUsage(resourceName, demand, demandType)
 				
-				logging.info("\t\t %s in %s - %f percent" % (appName, resourceName, resource['APPS'][appName]/resource['CAPACITY']) )
+				#logging.info("\t\t %s in %s - %f percent" % (appName, resourceName, resource['APPS'][appName]/resource['CAPACITY']) )
 					
 		assert isinstance(self.resources, dict), "%s : resources is not a dict - %s" %(self.getName(), self.resources)
 
@@ -187,10 +187,10 @@ class Resource(object):
 	def getResourceUtilization(self):
 		# we want usage of all the applications running in that particular resource
 		result = {}
-		logging.info("\t %s - Resource utilisation:" % self.getName() )
+		#logging.info("\t %s - Resource utilisation:" % self.getName() )
 		for resourceName, resource in self.resources.iteritems():
 			result[resourceName] = resource['USAGE']/resource['CAPACITY']
-			logging.info("\t\t %s - %f percent" % (resourceName, result[resourceName]) )
+			#logging.info("\t\t %s - %f percent" % (resourceName, result[resourceName]) )
 		return result
 	
 	
@@ -243,7 +243,7 @@ class Resource(object):
 			for appName, appResourceUsage in resource['APPS'].iteritems():
 				if appName not in exludeApps:
 					totalUsage[resourceName] += appResourceUsage
-		logging.info("\t %s - Total resource consumed: %s " % (self.getName(), totalUsage) )
+		#logging.info("\t %s - Total resource consumed: %s " % (self.getName(), totalUsage) )
 					
 		return totalUsage
 

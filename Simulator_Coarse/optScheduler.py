@@ -39,8 +39,6 @@ class optScheduler(Scheduler):
 		
 		for constellation in self.getConstellation(appNeighborhoods):
 			assert len(constellation) == nbrApps, "Not all apps (%i) accounted for in constellation (%i) : %s" % (nbrApps, len(constellation), constellation)
-	
-			logging.info("\t Permutation %s ->" % (constellation) )
 						
 			# Calculate cost for each constellation
 			constellationCosts.append( self.evaluateAppPlacementCost( self.getPackagedPath(appsNotScheduled, constellation) ) )
@@ -48,7 +46,7 @@ class optScheduler(Scheduler):
 			# Save constellation
 			constellations.append( constellation )
 			
-			logging.info("\t\t ->  With cost : %f" % (constellationCosts[-1]) )
+			logging.info("\t Permutation %s, with cost : %f" % (constellation, constellationCosts[-1]) )
 		
 		# Find constellation with min cost
 		minIndex = constellationCosts.index( min(constellationCosts) )

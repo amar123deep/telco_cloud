@@ -56,7 +56,7 @@ class Scheduler(object):
 		assert isinstance(entities, dict), "%s : entities is not a dict - %s" %(self.getName(), entities)
 
 		for entity in entities.itervalues():
-			logging.info("\t\t %s - Usage %f" % ( entity['ENTITY'].getName(), entity['USAGE']) )
+			#logging.info("\t\t %s - Usage %f" % ( entity['ENTITY'].getName(), entity['USAGE']) )
 			
 			entitiyOverload = entity['ENTITY'].evaluateAggregateCost(entity['USAGE'])
 			
