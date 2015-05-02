@@ -25,7 +25,7 @@ def main():
 	workloadName = "workload_v1_6_a5mini_1may"
 	#workloadName = "workfile_tripple_production"
 	nbrApps = 5
-	depth = 2
+	depth = 3
 
 	logging.basicConfig(filename='activities_static.log', level=logging.DEBUG, filemode='w')
 	logging.info("---- %s ----" % time.strftime("%d/%m/%Y - %H:%M:%S"))
