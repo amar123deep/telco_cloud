@@ -42,9 +42,16 @@ class Scheduler(object):
 		for entity in entities.itervalues():
 			entitiyOverload = entity['ENTITY'].evaluateAggregateCost(entity['USAGE'])
 			
+			if entitiyOverload == float('inf'):
+				overloadFactor = entitiyOverload
+				logging.info("%s is overloaded" % entity.getName())
+				break
+			
 			overloadFactor += entitiyOverload
 		
 		return overloadFactor	
+	
+	
 	
 	# Evalute if path can accomodate the placement option (threaded)
 	def evaluateAppPlacementCost_threaded(self, index, appsNotScheduled, constellation, queue):
