@@ -44,7 +44,7 @@ class Scheduler(object):
 			
 			if entitiyOverload == float('inf'):
 				overloadFactor = entitiyOverload
-				logging.info("%s is overloaded" % entity.getName())
+				logging.info("%s is overloaded" % entity['ENTITY'].getName())
 				break
 			
 			overloadFactor += entitiyOverload
