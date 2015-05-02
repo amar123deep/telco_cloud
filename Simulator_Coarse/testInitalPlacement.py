@@ -71,8 +71,8 @@ def main():
 	env.process(workload.produceWorkload())
 	env.process(monitor.measure())
 	
-	logging.info("Controller started")
-	controller = PeriodicController(env, coordinator, 1, 0.1)
+	#logging.info("Controller started")
+	#controller = PeriodicController(env, coordinator, 1, 0.1)
 	
 	logging.info("Simulation started")
 	env.run(until=workload.getWorkloadTimeSpan())
