@@ -7,6 +7,7 @@ class LinearCostFunc(object):
 		self.b = b
 		
 	def compute(self, usage):
+		#print " %f * %f + %f = %f" % ( self.a, usage, self.b, self.a*usage + self.b)  
 		return  self.a*usage + self.b
 
 class BarrierFunc(object):# Compute overload for a resource
@@ -190,7 +191,6 @@ class Resource(object):
 				totalDemand += totalAppDemand
 
 			resource['USAGE'] = totalDemand
-
 			#print "%s - resource %s - usage %s" % (self.getName(), resourceName, resource['USAGE'])
 
 	# compute app utilization
@@ -251,7 +251,7 @@ class Resource(object):
 	# Evalutae hypothecital resource usage given the addition of targetApps
 	def evaluateAdditionalResourcesUsage(self, targetApps):
 		usage = {}
-
+	
 		for resourceName in self.resources:
 			usage[resourceName] = 0.0
 			for appName, demand in targetApps.iteritems():

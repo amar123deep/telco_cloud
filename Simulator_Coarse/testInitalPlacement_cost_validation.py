@@ -26,17 +26,17 @@ def main():
 	# Data centre sizes
 	MY_RESOURCE_TYPES = {
 		"L":{ 
-				"CPU":		{'CAPACITY':100.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
-				"NET_UP":	{'CAPACITY':100.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
-				"NET_DOWN":	{'CAPACITY':100.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': LinearCostFunc(1.0,0),'MU':1},
+				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			},
 		"M":{ 
-				"CPU":		{'CAPACITY':50.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
-				"NET_UP":	{'CAPACITY':50.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':NoCostFunc(),'MU':1},
-				"NET_DOWN":	{'CAPACITY':50.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': LinearCostFunc(1.0,0),'MU':1},
+				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			},
 		"S":{ 
-				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': LinearCostFunc(1.0,0),'MU':1},
 				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
 				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			}

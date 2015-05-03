@@ -52,7 +52,7 @@ class TopologyMaker(object):
 		links = {}
 		leafs = {}
 
-		root = Datacentre('DC'+str(len(datacentres)), self.env, Datacentre.RESOURCE_TYPES['L'], self.applications)
+		root = Datacentre('DC'+str(len(datacentres)), self.env, sizeStruct[0], self.applications)
 		datacentres[root.getName()] = root
 		
 		print "() [%s]" % ('DC0')
