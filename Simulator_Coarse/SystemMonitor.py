@@ -41,13 +41,13 @@ class SystemMonitor(object):
 			#l1,l2 = self.measureSystemUtilization()
 			#self.bigUtilization[self.env.now] = (l1,l2)
 
-			yield self.env.timeout(self.time_delta)
-
 			for (signalName, measPointFunc) in self.inputs:
 				self.signals[signalName].append((self.env.now, measPointFunc(self)))
 
 			for (inputSignalName, outputSignalName, filterFunc) in self.filters:
 				self.signals[outputSignalName].append((self.env.now, filterFunc(self.signals[inputSignalName][-1])))
+				
+			yield self.env.timeout(self.time_delta)
 
 	'''
 	Measurements
@@ -60,6 +60,18 @@ class SystemMonitor(object):
 		for entity in entities:
 			for resourceName, resourceUtilisation in entity.getResourceUtilization().iteritems():
 				componentResourceUtilization += "%s%s%f%s" % (resourceName, self.separator, resourceUtilisation, self.separator)
+
+		return componentResourceUtilization
+		
+	def measureUtilisationPerApp(self):
+		componentResourceUtilization = ''
+		
+		entities = self.topology.getAllDCs() + self.topology.getAllLinks()
+		
+		for entity in entities:
+			util = entity.getCurrentResourcesUsage()
+			if len(util) !=0:
+				componentResourceUtilization += "\t %s \r %s \r" % (entity.getName(), util)
 
 		return componentResourceUtilization
 

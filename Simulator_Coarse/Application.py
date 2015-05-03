@@ -43,22 +43,69 @@ class Constraint_MigrationScheme(MigrationScheme):
 		# linear function
 		return self.a + math.exp(demand)
 
+# SLO/SLA
+class Threshold(object):
+	def __init__(self, threshold):
+		self.threshold = threshold
+		
+	def compute(self, value):
+		if value >= self.threshold:
+			return False
+		else:
+			return True
+
 class Application(object):
 	TYPES = {
 		'CPU_INTENSIVE':{	
-				'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.28), 'MIGRATION':None},
-				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None},
-				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None}
+				'CPU': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 0.28), 'MIGRATION':None },
+					'SLO_FUNC': Threshold(float('inf')),
+					},
+				'NET_UP': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(20.0),
+					},
+				'NET_DOWN': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(20.0),
+					},
 			},
 		'NET_INTENSIVE':{
-				'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
-				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39*4/7), 'MIGRATION':None},
-				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39*3/7), 'MIGRATION':None}
+				'CPU': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 0.09), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(float('inf')),
+					},
+				'NET_UP': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 0.39*4/7), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(20.0),
+					},
+				'NET_DOWN': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 0.39*3/7), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(20.0),
+					},
 			},
 		'SYMMETRIC':{
-				'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
-				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
-				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None}
+				'CPU': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(float('inf')),
+					},
+				'NET_UP': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(20.0),
+					},
+				'NET_DOWN': {
+					'RESOURCE_FUNCS':{
+						'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
+					'SLO_FUNC': Threshold(20.0),
+					},
 			}
 		}
 	
@@ -68,12 +115,18 @@ class Application(object):
 	
 	# Compute resource usgae for a resource as according to the corresponding resourceFuncs
 	def computeResourceUsage(self, resource, demand, demandType):
-		return self.resourceFuncs[resource][demandType].computeResourceUsage(demand)
-	
-	# [DEPRECATED] Compute migration resource PRODUCTION for each resource
-	def computeMigrationResourcePRODUCTION(self, demand):
-		return self.resourceFuncs[resource]['MIGRATION'].computeResourceUsage(demand)
-	
+		return self.resourceFuncs[resource]['RESOURCE_FUNCS'][demandType].computeResourceUsage(demand)
+		
+	# Evaluate SLO
+	def evaluateSLO(self, latency=0, cpu=0, memory=0):
+		result = True
+		
+		result *= self.resourceFuncs['CPU']['SLO_FUNC'].compute(cpu)
+		result *= self.resourceFuncs['NET_UP']['SLO_FUNC'].compute(latency)
+		result *= self.resourceFuncs['NET_DOWN']['SLO_FUNC'].compute(latency)
+		
+		return result
+
 	# Get name
 	def getName(self):
 		return self.name

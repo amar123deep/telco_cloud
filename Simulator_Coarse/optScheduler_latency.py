@@ -13,8 +13,8 @@ from Scheduler import Scheduler
 
 class optScheduler(Scheduler):
 	
-	def __init__(self, env, topology, applications):
-		Scheduler.__init__(self, env, topology, applications)
+	def __init__(self, env, topology):
+		Scheduler.__init__(self, env, topology)
 	
 	'''
 		Descr : A generator function that does the initial placement

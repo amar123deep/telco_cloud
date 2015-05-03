@@ -14,9 +14,11 @@ class Scheduler(object):
 	"""
 	appNodeDictGlobal = {}
 		
-	def __init__(self, env, topology):
+	def __init__(self, env, topology, applications):
 		self.env = env
 		self.topology = topology
+		self.applications = applications
+		
 		self.placements = []
 		self.measuredSystemOverload = float('inf')
 		self.placementRegistry = []
@@ -47,6 +49,16 @@ class Scheduler(object):
 				break
 			
 			overloadFactor += entitiyOverload
+		
+		# Caluclate latency
+		for (path, appName, demad) in appPlacement:
+			latency = 0
+			for node in path:
+				latency += node.evaluateLatency(entities[node.getName()]['USAGE'])
+				
+			policy = self.applications[appName].evaluateSLO(latency=latency)
+			if policy is False:
+				return float('inf')
 		
 		return overloadFactor
 	

@@ -46,7 +46,8 @@ def main():
 	workloadName = "workfile_tripple_production"
 	nbrApps = 5
 	depth = 4
-	mode = "_static"
+	mode = "_continuous"
+	testCase  = "_cost_ver"
 
 	logging.basicConfig(filename='activities.log', level=logging.DEBUG, filemode='w')
 	logging.info("---- %s ----" % time.strftime("%d/%m/%Y - %H:%M:%S"))
@@ -67,26 +68,28 @@ def main():
 																									MY_RESOURCE_TYPES['S'] ], 
 																				uplinkStruct 	= [10000,1000,1000], 
 																				downlinkStruct 	= [10000,1000,1000], 
-																				latencyStruct 	= [0,0,0] )
+																				latencyStruct 	= [1,1,1] )
 																				
 	logging.info('Topology generated, with %i datacentres' % len(datacentres))
 	
 	topology = Topology(env, datacentres, links, leafnodes)
 	
-	scheduler = optScheduler(env, topology)
+	scheduler = optScheduler(env, topology, applications)
 	logging.info('%s scheduler created' % type(scheduler).__name__)
 	
 	coordinator = Coordinator(env, topology, scheduler, depth)
 	
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, 0.2, workloadName+mode, topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, 0.2, workloadName+mode+testCase, topology, coordinator, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
+																("APP_RESOURCE_UTILISATION", SystemMonitor.measureUtilisationPerApp),
 															], 
 															[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
 																("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
 																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
+																("APP_RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, None),
 															],
 															[])
 	
@@ -94,8 +97,8 @@ def main():
 	env.process(workload.produceWorkload())
 	env.process(monitor.measure())
 	
-	#logging.info("Controller started")
-	#controller = PeriodicController(env, coordinator, 1, 0.1)
+	logging.info("Controller started")
+	controller = PeriodicController(env, coordinator, 1, 0.1)
 	
 	logging.info("Simulation started")
 	env.run(until=workload.getWorkloadTimeSpan())
@@ -105,7 +108,7 @@ def main():
 	logging.info("Composing results")
 	
 	monitor.produceOutput()
-	scheduler.output(workloadName+mode)
+	scheduler.output(workloadName+mode+testCase)
 	
 	print "DONE"
 	

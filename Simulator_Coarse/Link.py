@@ -30,6 +30,14 @@ class Link(Resource):
 	# Get link latency
 	def getLatency(self, resourceName):
 		return self.properties[resourceName]['LATENCY']
+	
+	
+	def evaluateLatency(self, resourceUsage):
+		latency = 0
+		for resourceName in self.properties:
+			latency += self.propagation_latency + resourceUsage[resourceName]/self.resources[resourceName]['CAPACITY']
+		
+		return latency
 
 	# (Resource) Compute resource usage
 	def computeResourceUsage(self):

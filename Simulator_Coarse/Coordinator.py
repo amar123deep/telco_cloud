@@ -73,14 +73,16 @@ class Coordinator(object):
 			if appName in self.registry:
 				dcName = self.registry[appName]
 				for leafNodeName, demand in nodeUser.iteritems(): 
-					path = self.topology.getPath(appName, leafNodeName, dcName)
-					#x_list = []
-					#for x in path: 
-					#	x_list.append(x.getName())
-					#print "%s -> %s (%s) : %s" % (leafNodeName, dcName, x_list, demand)
-					for entity in path:
-						entity.updateDemand(appName, leafNodeName, demand)
-						#print "\t %s - %f" % (entity.getName(), entity.getCurrentCost())
+					if demand['PRODUCTION'] != 0:
+						path = self.topology.getPath(appName, leafNodeName, dcName)
+						#x_list = []
+						#for x in path: 
+						#	x_list.append(x.getName())
+						#print "%s -> %s (%s) : %s" % (leafNodeName, dcName, x_list, demand)
+						for entity in path:
+							#print "%s + %s (%s)"%(entity.getName(), appName, demand)
+							entity.updateDemand(appName, leafNodeName, demand)
+							#print "\t %s - %f" % (entity.getName(), entity.getCurrentCost())
 			else: 
 				print "%s is not scheduled" % (appName)
 
