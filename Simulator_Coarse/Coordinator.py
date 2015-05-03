@@ -12,6 +12,8 @@ class Coordinator(object):
 		self.depth = depth
 		
 		self.registry = {}
+		
+		self.appWorkloadCache = None
 
 		#env.process(self.clearResources())
 
@@ -21,13 +23,23 @@ class Coordinator(object):
 		'''
 		appsNeedTobeReevaluated = {}
 		logging.info("### Revaluating")
+		
+		totalDemand = {}
+		
 		for leaf in self.topology.getAllLeafs():
-			for appName, demandDict in leaf.getAppDemand().iteritems():
-				assert isinstance(demandDict, dict), "%s : demandDict is not a dict - %s" %(self.getName(), demandDict)
-				appsNeedTobeReevaluated[appName] = (demandDict, self.topology.findNeighbours(self.registry[appName], self.depth))
+			for appName, demandDict in leaf.getAppDemands().iteritems():
+				if appName not in totalDemand:
+					totalDemand[appName] = {}
+				totalDemand[appName].update(demandDict)
+		
+		for appName, nodeUser in totalDemand.iteritems():
+				assert isinstance(demandDict, dict), "%s : demandDict is not a dict - %s" %(self.getName(), nodeUser)
+				appsNeedTobeReevaluated[appName] = (nodeUser, self.topology.findNeighbours(self.registry[appName], self.depth))
 		
 		if len(appsNeedTobeReevaluated) > 0:
 			self.callScheduler(appsNeedTobeReevaluated)
+		
+		self.updateDemand()
 		
 	'''
 	######## Migration ########
@@ -48,16 +60,29 @@ class Coordinator(object):
 			for entity in path:
 				#print "%s overload Before : %s" % (entity.getName(), entity.getOverloadFactor())
 				entity.clearDemand(appName)
+				
 				#print "%s overload After : %s" % (entity.getName(), entity.getOverloadFactor())
 
 	'''
 	Update demand
 	'''
-	def updateDemand(self, appName, dcName, leafDemand):
-		for leafName, leafDemand in leafDemand.iteritems():
-			path = self.topology.getPath(appName, leafName, dcName)
-			for entity in path:
-				entity.updateDemand(appName, leafName, leafDemand)
+	def updateDemand(self):
+		self.topology.clearDemand()
+		for appName, nodeUser in self.appWorkloadCache.iteritems():
+			# Update workload
+			if appName in self.registry:
+				dcName = self.registry[appName]
+				for leafNodeName, demand in nodeUser.iteritems(): 
+					path = self.topology.getPath(appName, leafNodeName, dcName)
+					#x_list = []
+					#for x in path: 
+					#	x_list.append(x.getName())
+					#print "%s -> %s (%s) : %s" % (leafNodeName, dcName, x_list, demand)
+					for entity in path:
+						entity.updateDemand(appName, leafNodeName, demand)
+						#print "\t %s - %f" % (entity.getName(), entity.getCurrentCost())
+			else: 
+				print "%s is not scheduled" % (appName)
 
 	def processWorkload(self,appWorkload):
 		'''
@@ -65,15 +90,22 @@ class Coordinator(object):
 		appWorkload has structure: {App:{node:user}}
 		'''
 		logging.debug('### Start workload processing')
+		
+		self.appWorkloadCache = appWorkload.copy()
+
+		#print self.registry
 
 		# All apps from workload at current time instant 
-		currentAPPlist = appWorkload.keys()
+		currentAPPlist = self.appWorkloadCache.keys()
 		# we store apps that's need to be scheduled and are absent in the registry
 		appsWorkloadNotScheduled = {}
-		for appName, nodeUser in appWorkload.iteritems():  # appName , {leaf: nbrUsers}  
+		for appName, nodeUser in self.appWorkloadCache.iteritems():  # appName , {leaf: nbrUsers}  
 
 			if appName not in self.registry: # registry contains 
 				#appsWorkloadNotScheduled[appName] = (nodeUser, self.topology.getAllDCsName()) 
+				#print nodeUser
+				#print self.topology.findNeighbours(self.topology.getRandomDCName(), self.depth)
+				#print "------------"
 				appsWorkloadNotScheduled[appName] = (nodeUser, self.topology.findNeighbours(self.topology.getRandomDCName(), self.depth))
 
 		removeAppDClist = []
@@ -90,15 +122,10 @@ class Coordinator(object):
 		logging.info('\t %s - apps needs to be scheduled : %s ' % (type(self).__name__, str(appsWorkloadNotScheduled.keys())))
 		if len(appsWorkloadNotScheduled) > 0:
 			self.callScheduler(appsWorkloadNotScheduled)
-		for appName, nodeUser in appWorkload.iteritems():
-			# Update workload
-			if appName in self.registry:
-				dcName = self.registry[appName]
-				for leafNodeName, demand in nodeUser.iteritems(): 
-					for element in self.topology.getPath(appName, leafNodeName, dcName):
-						element.updateDemand(appName, leafNodeName, demand)
-			else: 
-				print "%s is not scheduled" % (appName)
+			
+		self.updateDemand()
+		
+		#print self.registry
 
 	def callScheduler(self, appsWorkloadNotScheduled):
 		'''
@@ -107,8 +134,8 @@ class Coordinator(object):
 		for appName, dcName in self.scheduler.fnSchedule(appsWorkloadNotScheduled, self.registry):
 			if dcName is not None:
 				# Update app registry 
-				self.registry[appName] = dcName  
-				
+				self.registry[appName] = dcName
+
 	'''
 	This can propbably be done more beutiful, but only necessary if we will publish the code. :)
 	'''

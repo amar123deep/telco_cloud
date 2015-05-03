@@ -6,12 +6,12 @@ from Leaf import Leaf
 class Link(Resource):
 	RESOURCE_TYPES = {
 		"M": {		
-				'NET_UP':	{'CAPACITY':40000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1},
-				'NET_DOWN':	{'CAPACITY':40000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1} 
+				'NET_UP':	{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0), 'OVERLOADCOST': NoCostFunc(), 'MU':1},
+				'NET_DOWN':	{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0), 'OVERLOADCOST': NoCostFunc(), 'MU':1} 
 			},
 		"S": {	
-				'NET_UP':	{'CAPACITY':4000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1},
-				'NET_DOWN':	{'CAPACITY':4000.0, 'EXECOST': NoCostFunc(), 'OVERLOADCOST': BarrierFunc(1,0.0), 'MU':1} 
+				'NET_UP':	{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0), 'OVERLOADCOST': NoCostFunc(), 'MU':1},
+				'NET_DOWN':	{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0), 'OVERLOADCOST': NoCostFunc(), 'MU':1} 
 			}
 		}
 

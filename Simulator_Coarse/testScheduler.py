@@ -74,11 +74,8 @@ def main():
 	
 	topology = Topology(env, datacentres, links, leafnodes)
 	
-	l = topology.findAllNeighbour('DC1',3)
+	l = topology.findNeighbours('DC1',3)
 	print l
-	
-	
-	
 	
 	
 if __name__ == '__main__':

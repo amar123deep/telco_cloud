@@ -26,12 +26,15 @@ class Leaf(Resource):
 		self.appDemands[appName] = {leafName:demand}
 
 	# Get app demand
-	def getAppDemand(self):
+	def getAppDemands(self):
 		return self.appDemands
+		
+	def getAppDemand(self, appName):
+		return self.appDemands[appName]
 
 	# Override - Update resource usage
 	def computeResourceUsage(self):
-		pass
+		return 0
 
 	def computeLatency(self, appName):
 		path = self.findMinPath()
@@ -54,3 +57,10 @@ class Leaf(Resource):
 	# Get population for an app
 	def getAppPopulation(self, appName):
 		return self.appDemands[appName]
+	
+	def computeTotalappDemand(self):
+		pass
+	
+	# Get overload factor 
+	def getCurrentCost(self):
+		return 0

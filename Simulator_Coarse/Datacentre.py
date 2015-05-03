@@ -7,19 +7,19 @@ class Datacentre(Resource):
 	# Data centre sizes
 	RESOURCE_TYPES = {
 		"L":{ 
-				"CPU":		{'CAPACITY':8550.0, 'EXECOST': LinearCostFunc(1,0.0),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
-				"NET_UP":	{'CAPACITY':8550.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
-				"NET_DOWN":	{'CAPACITY':8550.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(1,0),'MU':1}
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			},
 		"M":{ 
-				"CPU":		{'CAPACITY':855.0, 'EXECOST': LinearCostFunc(2,0.0),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
-				"NET_UP":	{'CAPACITY':855.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':BarrierFunc(1,0),'MU':1},
-				"NET_DOWN":	{'CAPACITY':855.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(),'MU':1}
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			},
 		"S":{ 
-				"CPU":		{'CAPACITY':400.0, 'EXECOST': LinearCostFunc(4,0.0),'OVERLOADCOST': BarrierFunc(1,0),'MU':1},
-				"NET_UP":	{'CAPACITY':400.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(),'MU':1},
-				"NET_DOWN":	{'CAPACITY':400.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': BarrierFunc(),'MU':1}
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			}
 		}
 	

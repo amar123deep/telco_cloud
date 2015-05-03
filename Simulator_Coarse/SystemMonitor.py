@@ -5,11 +5,12 @@ import os
 
 class SystemMonitor(object):
 	
-	def __init__(self, env, time_delta, outputFolder, topology, coordinator, scheduler, inputs, outputs, filters):
+	def __init__(self, env, time_delta, time_offset, outputFolder, topology, coordinator, scheduler, inputs, outputs, filters):
 		self.env = env
 		self.topology = topology
 		self.coordinator = coordinator
 		self.time_delta = time_delta
+		self.time_offset = time_offset
 		self.inputs = inputs
 		self.outputs = outputs
 		self.filters = filters 
@@ -32,6 +33,8 @@ class SystemMonitor(object):
 		self.bigUtilization = {}
 
 	def measure(self):
+		yield self.env.timeout(self.time_offset)
+		
 		while True:
 			#systemBadness,dcBadness,linkBadness, dcApp = self.measureSystemBadness()
 			#self.bigBadness[self.env.now] = (systemBadness, dcBadness, linkBadness,dcApp)

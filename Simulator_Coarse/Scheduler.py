@@ -31,10 +31,9 @@ class Scheduler(object):
 	'''
 	######## Evaluation ########
 	'''
-	# Evalute if path can accomodate the placement option
-	def evaluateAppPlacementCost(self, appPlacement):
-		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
-		
+	# [1] Evalute if path can accomodate the placement option
+	def evaluateAppPlacementCost(self, appPlacement, appNames):
+		entities = self.evaluateAppPlacementResourcesUsage(appPlacement, appNames)
 		overloadFactor = 0
 
 		assert isinstance(entities, dict), "%s : entities is not a dict - %s" %(self.getName(), entities)
@@ -49,11 +48,11 @@ class Scheduler(object):
 			
 			overloadFactor += entitiyOverload
 		
-		return overloadFactor	
+		return overloadFactor
 	
-	# Evalute if path can accomodate the placement option (threaded)
+	# [1] Evalute if path can accomodate the placement option (threaded)
 	def evaluateAppPlacementCost_threaded(self, index, appsNotScheduled, constellation, queue):
-		appPlacement = appPlacement = self.getPackagedPath(appsNotScheduled, constellation)
+		appPlacement = self.getPackagedPath(appsNotScheduled, constellation)
 		entities = self.evaluateAppPlacementResourcesUsage(appPlacement)
 		
 		overloadFactor = 0
@@ -75,19 +74,37 @@ class Scheduler(object):
 		
 		queue.put((index, overloadFactor))	
 	
-	# Compute total local resource usage for app in appNames and paths 
-	def evaluateAppPlacementResourcesUsage(self, appPlacement): # appPaths ([PATH], appName, demand)
+	# [2] Compute total local resource usage for app in appNames and paths 
+	def evaluateAppPlacementResourcesUsage(self, appPlacement, appNames): # appPaths ([PATH], appName, demand)
 		enteties = {}
 		for (path, appName, demand) in appPlacement:
 			for entity in path:
 				if entity.getName() not in enteties:
-					enteties[entity.getName()] = {'USAGE':entity.evaluateResourcesUsageExcluding(appName), 'ENTITY':entity}
+					enteties[entity.getName()] = {'USAGE':entity.evaluateResourcesUsageExcluding(appNames), 'ENTITY':entity}
 				
 				usage = entity.evaluateAdditionalResourcesUsage({appName:demand})
 				for resourceName, resourceUsage in usage.iteritems():
 					enteties[entity.getName()]['USAGE'][resourceName] += resourceUsage
 						
 		return enteties
+
+	def getPackagedPath(self, appsNotScheduled, appDCs):
+		result = []
+		appNames = sorted(appsNotScheduled)
+		nbrApps = len(appNames)
+		
+		# Generate path for each app in the constellation
+		for i in range(0, nbrApps):
+			appName = appNames[i]
+			targetDC = appDCs[i]
+			
+			# Find path for each leaf dc pair
+			(appDemand, neighborhood) = appsNotScheduled[appName]
+			
+			for leafNodeName, demand in appDemand.iteritems():
+				result.append( ( self.topology.getPathNoLeaf( appName, leafNodeName, targetDC ), appName, demand) )
+				
+		return result
 	
 	# Evalute if path can accomodate the placement option
 	def evaluatePath(self, appPlacement):

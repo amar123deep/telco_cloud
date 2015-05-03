@@ -52,7 +52,13 @@ class Topology:
 			result.append(self.leafs[leafName])
 		
 		return result
-		
+	
+	# Clear all workload
+	def clearDemand(self):
+		elements = self.getAllDCs() + self.getAllLinks() + self.getAllLeafs()
+		for element in elements:
+			element.clearAllDemand()
+	
 	# Return all leaf names
 	def getAllLeafNames(self):
 		return self.leafs.keys()
@@ -66,8 +72,19 @@ class Topology:
 		
 		if key not in self.pathRegistry:
 			self.updateTable( {key: self.findMinPath(fromNodeName, toNodeName)} )
+		if len(self.pathRegistry[key]) == 0:
+			self.updateTable( {key: self.findMinPath(fromNodeName, toNodeName)} )
+		
+		#print self.pathRegistry[key]
 		
 		return self.pathRegistry[key]
+	
+	def getPathNoLeaf(self, appName, fromNodeName, toNodeName):
+		result = self.getPath(appName, fromNodeName, toNodeName) + []
+		assert len(result)>0, "getPathNoLeaf returned path of length 0 : %s : %s" % (result, self.pathRegistry)
+		del result[0]
+		#print result
+		return result
 	
 	def updateTable(self, appPlacementPaths):
 		
@@ -185,7 +202,7 @@ class Topology:
 		
 		return neighbours
 		
-	def findAllNeighbour(self, nodeName,dist): 
+	def findAllNeighbour_old(self, nodeName,dist): 
 		'''
 		returns name of all the nodes at a distance
 		'''

@@ -35,13 +35,14 @@ class optScheduler(Scheduler):
 			appNames.append(appName)
 		
 		nbrApps = len(appNames)
-		assert len(appNeighborhoods) == nbrApps, "Number of neighborhoods is the same as the number of apps."
-		
+
 		for constellation in self.getConstellation(appNeighborhoods):
 			assert len(constellation) == nbrApps, "Not all apps (%i) accounted for in constellation (%i) : %s" % (nbrApps, len(constellation), constellation)
-						
+			
+			#print constellation
+			
 			# Calculate cost for each constellation
-			constellationCosts.append( self.evaluateAppPlacementCost( self.getPackagedPath(appsNotScheduled, constellation) ) )
+			constellationCosts.append( self.evaluateAppPlacementCost( self.getPackagedPath(appsNotScheduled, constellation), appNames ) )
 			
 			# Save constellation
 			constellations.append( constellation )
@@ -58,7 +59,7 @@ class optScheduler(Scheduler):
 		else:
 			# Calculate cost current constellation
 			sortedAppPlacementRegistry = collections.OrderedDict(sorted(appPlacementRegistry.items()))
-			currentCost = self.evaluateAppPlacementCost( self.getPackagedPath(appsNotScheduled, sortedAppPlacementRegistry.values()) )
+			currentCost = self.evaluateAppPlacementCost( self.getPackagedPath(appsNotScheduled, sortedAppPlacementRegistry.values()), appNames )
 
 		if proposedCost < currentCost:
 			print "NEW PLACEMENT: now: %f vs. before: %f ->" % (proposedCost, currentCost)
@@ -80,25 +81,6 @@ class optScheduler(Scheduler):
 		print "Evaluation took : %i ms with min: %f, current: %f " % (t_end-t_start, proposedCost, currentCost)
 		logging.info("Evaluation took : %i ms with min: %f, current: %f " % (t_end-t_start, proposedCost, currentCost))
 		self.recordEvaluation(t_end-t_start, nbrApps)
-		
-
-	def getPackagedPath(self, appsNotScheduled, appDCs):
-		result = []
-		appNames = sorted(appsNotScheduled)
-		nbrApps = len(appNames)
-		
-		# Generate path for each app in the constellation
-		for i in range(0, nbrApps):
-			appName = appNames[i]
-			targetDC = appDCs[i]
-			
-			# Find path for each leaf dc pair
-			(appDemand, neighborhood) = appsNotScheduled[appName]
-			
-			for leafNodeName, demand in appDemand.iteritems():
-				result.append( ( self.topology.getPath( appName, leafNodeName, targetDC ), appName, demand) )
-		
-		return result
 	
 	def getConstellation(self, appNeighborhoods):
 		for permutation in self.generatePermutations(appNeighborhoods, [], 0):

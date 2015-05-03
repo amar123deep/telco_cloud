@@ -56,7 +56,7 @@ class Application(object):
 				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 0.39*3/7), 'MIGRATION':None}
 			},
 		'SYMMETRIC':{
-				'CPU': {'PRODUCTION':LinearAppResrFunc(1.0, 1.0), 'MIGRATION':None},
+				'CPU': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
 				'NET_UP': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
 				'NET_DOWN': {'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None}
 			}
