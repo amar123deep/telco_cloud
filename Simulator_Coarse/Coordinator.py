@@ -17,6 +17,9 @@ class Coordinator(object):
 
 		#env.process(self.clearResources())
 
+	def getAppPlacement(self, appName):
+		return self.registry[appName]
+
 	def revaluateAll(self):
 		'''
 		This function when called reevaluates the whole system

@@ -83,11 +83,10 @@ class Topology:
 		result = self.getPath(appName, fromNodeName, toNodeName) + []
 		assert len(result)>0, "getPathNoLeaf returned path of length 0 : %s : %s" % (result, self.pathRegistry)
 		del result[0]
-		#print result
+
 		return result
 	
 	def updateTable(self, appPlacementPaths):
-		
 		for (appName, fromNodeName, toNodeName) , path in appPlacementPaths.iteritems():
 			assert type(path) is list , "Provided path is not a list"
 			assert len(path) > 2 , "Topology: Path has no length"

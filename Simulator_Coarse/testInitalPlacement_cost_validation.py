@@ -26,17 +26,17 @@ def main():
 	# Data centre sizes
 	MY_RESOURCE_TYPES = {
 		"L":{ 
-				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': LinearCostFunc(1.0,0),'MU':1},
-				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
-				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
+				"CPU":		{'CAPACITY':100.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_UP":	{'CAPACITY':100.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':100.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			},
 		"M":{ 
-				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': LinearCostFunc(1.0,0),'MU':1},
-				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':NoCostFunc(),'MU':1},
-				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
+				"CPU":		{'CAPACITY':50.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
+				"NET_UP":	{'CAPACITY':50.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST':NoCostFunc(),'MU':1},
+				"NET_DOWN":	{'CAPACITY':50.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			},
 		"S":{ 
-				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': LinearCostFunc(1.0,0),'MU':1},
+				"CPU":		{'CAPACITY':10.0, 'EXECOST': LinearCostFunc(1.0,0.0),'OVERLOADCOST': NoCostFunc(),'MU':1},
 				"NET_UP":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1},
 				"NET_DOWN":	{'CAPACITY':10.0, 'EXECOST': NoCostFunc(),'OVERLOADCOST': NoCostFunc(),'MU':1}
 			}
@@ -80,16 +80,18 @@ def main():
 	coordinator = Coordinator(env, topology, scheduler, depth)
 	
 	workload = Workload(env,'workloads/'+workloadName+'.json', coordinator)
-	monitor = SystemMonitor(env, 1, 0.2, workloadName+mode+testCase, topology, coordinator, scheduler, 	
+	monitor = SystemMonitor(env, 1, 0.2, workloadName+mode+testCase, topology, coordinator, applications, scheduler, 	
 															[	("TOTAL_OVERLOAD", SystemMonitor.measureSystemOverloaFactor),
 																("COMPONENT_OVERLOAD", SystemMonitor.measureComponentOverloadFactor),
 																("RESOURCE_UTILISATION", SystemMonitor.measureComponentResourceUtilisation),
 																("APP_RESOURCE_UTILISATION", SystemMonitor.measureUtilisationPerApp),
+																("APP_RTT", SystemMonitor.measureAppLatency),
 															], 
 															[	("TOTAL_OVERLOAD", SystemMonitor.fileCSVOutput, None),
 																("COMPONENT_OVERLOAD", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
 																("RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, SystemMonitor.composeDCLinkHeader),
 																("APP_RESOURCE_UTILISATION", SystemMonitor.fileCSVOutput, None),
+																("APP_RTT", SystemMonitor.fileCSVOutput, SystemMonitor.composeLatencyHeader)
 															],
 															[])
 	

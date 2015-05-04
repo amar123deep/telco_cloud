@@ -49,7 +49,7 @@ class Threshold(object):
 		self.threshold = threshold
 		
 	def compute(self, value):
-		if value >= self.threshold:
+		if value > self.threshold:
 			return False
 		else:
 			return True
@@ -65,7 +65,7 @@ class Application(object):
 				'NET_UP': {
 					'RESOURCE_FUNCS':{
 						'PRODUCTION':LinearAppResrFunc(0.0, 0.01), 'MIGRATION':None},
-					'SLO_FUNC': Threshold(20.0),
+					'SLO_FUNC': Threshold(2.0),
 					},
 				'NET_DOWN': {
 					'RESOURCE_FUNCS':{
@@ -99,12 +99,12 @@ class Application(object):
 				'NET_UP': {
 					'RESOURCE_FUNCS':{
 						'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
-					'SLO_FUNC': Threshold(20.0),
+					'SLO_FUNC': Threshold(4.0),
 					},
 				'NET_DOWN': {
 					'RESOURCE_FUNCS':{
 						'PRODUCTION':LinearAppResrFunc(0.0, 1.0), 'MIGRATION':None},
-					'SLO_FUNC': Threshold(20.0),
+					'SLO_FUNC': Threshold(4.0),
 					},
 			}
 		}
@@ -118,14 +118,14 @@ class Application(object):
 		return self.resourceFuncs[resource]['RESOURCE_FUNCS'][demandType].computeResourceUsage(demand)
 		
 	# Evaluate SLO
-	def evaluateSLO(self, latency=0, cpu=0, memory=0):
+	def evaluateSLO(self, latency = {'NET_UP':0,'NET_DOWN':0}, cpu=0, memory=0):
 		result = True
 		
 		result *= self.resourceFuncs['CPU']['SLO_FUNC'].compute(cpu)
-		result *= self.resourceFuncs['NET_UP']['SLO_FUNC'].compute(latency)
-		result *= self.resourceFuncs['NET_DOWN']['SLO_FUNC'].compute(latency)
+		result *= self.resourceFuncs['NET_UP']['SLO_FUNC'].compute(latency['NET_UP'])
+		result *= self.resourceFuncs['NET_DOWN']['SLO_FUNC'].compute(latency['NET_DOWN'])
 		
-		return result
+		return bool(result)
 
 	# Get name
 	def getName(self):

@@ -294,8 +294,8 @@ class Resource(object):
 			
 			resource['COST'] = resource['MU']*overload + cost
 			result += resource['COST']
-			if resourceName is "CPU": 
-				print "%s - overload %s - cost %s- usage %s- capacity %s" % (self.getName(), overload, cost, resource['USAGE'], resource['CAPACITY'])
+			#if resourceName is "CPU": 
+				#print "%s - overload %s - cost %s- usage %s- capacity %s" % (self.getName(), overload, cost, resource['USAGE'], resource['CAPACITY'])
 		return result
 	
 	# Evalutae if an application can be accomodated in the infrastucture
@@ -317,5 +317,5 @@ class Resource(object):
 			
 		return result
 	
-	def evaluateLatency(self, resourceUsage):
+	def evaluateLatency(self, resourceName, resourceUsage):
 		return 0

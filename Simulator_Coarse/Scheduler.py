@@ -50,15 +50,24 @@ class Scheduler(object):
 			
 			overloadFactor += entitiyOverload
 		
+		
 		# Caluclate latency
-		for (path, appName, demad) in appPlacement:
-			latency = 0
-			for node in path:
-				latency += node.evaluateLatency(entities[node.getName()]['USAGE'])
+		for (path, appName, demand) in appPlacement:
+			if demand['PRODUCTION'] != 0:
+				latency = {'NET_UP':0,'NET_DOWN':0}
 				
-			policy = self.applications[appName].evaluateSLO(latency=latency)
-			if policy is False:
-				return float('inf')
+				path_names = ''
+				for node in path:
+					path_names += " " + node.getName()
+					latency['NET_UP'] += node.evaluateLatency('NET_UP', entities[node.getName()]['USAGE'])
+					latency['NET_DOWN'] += node.evaluateLatency('NET_DOWN', entities[node.getName()]['USAGE'])
+					
+				policy_violation = self.applications[appName].evaluateSLO(latency=latency)
+	
+				logging.info("\t %s - path: %s latency: %s, %s, %f, policy: %r" % (appName, path_names, latency, entities[node.getName()]['USAGE'], demand['PRODUCTION'], policy_violation))
+	
+				if policy_violation is False:
+					return float('inf')
 		
 		return overloadFactor
 	

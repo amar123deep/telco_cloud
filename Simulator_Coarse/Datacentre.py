@@ -1,6 +1,6 @@
 import simpy
 
-from Resource import Resource,LinearCostFunc,NoCostFunc,BarrierFunc
+from Resource import Resource, LinearCostFunc, NoCostFunc, BarrierFunc
 
 class Datacentre(Resource):
 	

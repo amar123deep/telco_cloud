@@ -5,10 +5,11 @@ import os
 
 class SystemMonitor(object):
 	
-	def __init__(self, env, time_delta, time_offset, outputFolder, topology, coordinator, scheduler, inputs, outputs, filters):
+	def __init__(self, env, time_delta, time_offset, outputFolder, topology, coordinator, applications, scheduler, inputs, outputs, filters):
 		self.env = env
 		self.topology = topology
 		self.coordinator = coordinator
+		self.applications = applications
 		self.time_delta = time_delta
 		self.time_offset = time_offset
 		self.inputs = inputs
@@ -74,6 +75,34 @@ class SystemMonitor(object):
 				componentResourceUtilization += "\t %s \r %s \r" % (entity.getName(), util)
 
 		return componentResourceUtilization
+		
+	def measureAppLatency(self):
+		rttResult = {}
+		leafs = self.topology.getAllLeafs()
+		
+		for leaf in leafs:
+			for appName, demand in leaf.getAppDemands().iteritems():
+				if appName not in rttResult:
+					rttResult[appName] = []
+				dcName = self.coordinator.getAppPlacement(appName)
+				if demand[leaf.getName()]['PRODUCTION'] != 0:
+					pathRTT = 0
+					path = self.topology.getPath(appName, leaf.getName(), dcName)
+					for element in path:
+						#print element
+						for resourceName in ['NET_UP', 'NET_DOWN']:
+							pathRTT += element.getLatency(resourceName)
+				rttResult[appName].append(pathRTT)
+		
+		result = ''
+		
+		for appName in sorted(self.applications):
+			if appName in rttResult:
+				rttTimes = rttResult[appName]
+				result += "%f%s%f%s%f%s" % (sum(rttTimes) / float(len(rttTimes)), self.separator, max(rttTimes), self.separator, min(rttTimes),self.separator)
+			else:
+				result += "%s%s%s%s%s%s" % ('', self.separator, '', self.separator, '', self.separator )
+		return result
 
 	def measureSystemUtilization(self): 
 		dcUtilization = []
@@ -147,6 +176,17 @@ class SystemMonitor(object):
 
 	def composePlacementsHeader(self):
 		return "TIME, App, DC, Cost, Exe time\r"
+
+	def composeLatencyHeader(self):
+		header = self.separator
+		for appName in self.applications:
+			header += "%s%s%s%s%s%s" % ('<', self.separator, appName, self.separator, '>', self.separator)
+		
+		header += "\rTIME" + self.separator
+		
+		header += ("%s%s%s%s%s%s" % ('MEAN', self.separator, 'MAX', self.separator, 'MIN', self.separator) ) *len(self.applications) + '\r'
+		
+		return header
 
 	'''
 	DEPRECATED
